@@ -1,22 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Design System Builder v4 — farhan.app</title>
+  <title>Design System Builder — farhan.app</title>
 
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LQGBVTB39N"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-LQGBVTB39N');
-  </script>
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <!-- Favicon (inline SVG — matches UI logo) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Crect x='2' y='2' width='7' height='7' rx='1.5' fill='%230070f3'/%3E%3Crect x='11' y='2' width='7' height='7' rx='1.5' fill='%230070f3' opacity='0.5'/%3E%3Crect x='2' y='11' width='7' height='7' rx='1.5' fill='%230070f3' opacity='0.5'/%3E%3Crect x='11' y='11' width='7' height='7' rx='1.5' fill='%230070f3' opacity='0.3'/%3E%3C/svg%3E" />
 
   <!-- Primary meta -->
   <meta name="description" content="A token-driven design system builder with live preview and production-ready CSS output. Built by Farhan — farhan.app" />
@@ -214,9 +204,14 @@
     </div>
 
     <div class="nav-footer">
-      <a class="nav-footer__link" href="https://farhan.app" target="_blank" rel="noopener noreferrer">farhan.app</a>
-      <span class="nav-footer__dot" aria-hidden="true"></span>
-      <a class="nav-footer__link" href="changelog.html">Changelog</a>
+      <div class="nav-footer__row">
+        <button class="nav-footer__link nav-footer__about" type="button" data-about-open>About</button>
+        <span class="nav-footer__dot" aria-hidden="true"></span>
+        <a class="nav-footer__link" href="changelog.html">Changelog</a>
+      </div>
+      <div class="nav-footer__row nav-footer__row--credit">
+        Built by <a class="nav-footer__link nav-footer__link--credit" href="https://farhan.app" target="_blank" rel="noopener noreferrer">Farhan</a>
+      </div>
     </div>
   </nav>
 
@@ -231,9 +226,9 @@
       <!-- Rendered by PreviewEngine -->
     </div>
     <footer class="mobile-footer">
-      <a href="https://farhan.app" target="_blank" rel="noopener noreferrer">farhan.app</a>
+      <span class="mobile-footer__credit">Built by <a href="https://farhan.app" target="_blank" rel="noopener noreferrer">Farhan</a></span>
       <div class="mobile-footer__links">
-        <a href="/">Builder</a>
+        <button type="button" class="mobile-footer__link" data-about-open>About</button>
         <span class="mobile-footer__dot" aria-hidden="true"></span>
         <a href="changelog.html">Changelog</a>
       </div>
@@ -379,6 +374,58 @@
 
 <!-- Hidden file input for import -->
 <input type="file" id="import-file-input" accept=".json" aria-hidden="true" tabindex="-1" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px" />
+
+<!-- About modal -->
+<dialog id="about-modal" class="about-modal" aria-labelledby="about-modal-title">
+  <div class="about-modal__inner">
+    <button type="button" class="about-modal__close" data-about-close aria-label="Close">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
+    </button>
+
+    <header class="about-modal__header">
+      <span class="about-modal__logo" aria-hidden="true">
+        <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
+          <rect x="2" y="2" width="7" height="7" rx="1.5" fill="var(--app-accent)"/>
+          <rect x="11" y="2" width="7" height="7" rx="1.5" fill="var(--app-accent)" opacity="0.5"/>
+          <rect x="2" y="11" width="7" height="7" rx="1.5" fill="var(--app-accent)" opacity="0.5"/>
+          <rect x="11" y="11" width="7" height="7" rx="1.5" fill="var(--app-accent)" opacity="0.3"/>
+        </svg>
+      </span>
+      <div class="about-modal__heading">
+        <h2 id="about-modal-title" class="about-modal__title">Design System Builder <span class="about-modal__version">v4.3</span></h2>
+        <p class="about-modal__tagline">Token-driven UI engine · live preview · production CSS</p>
+      </div>
+    </header>
+
+    <div class="about-modal__body">
+      <p class="about-modal__intro">A playground for designers and front-end engineers. Define tokens, preview a full component library instantly, and copy production-ready CSS. Everything runs locally — no backend, no tracking.</p>
+
+      <p class="about-modal__note">Generated CSS is provided as-is. Component styling is a reference implementation, not a drop-in production framework.</p>
+
+      <ul class="about-modal__links">
+        <li><a href="https://github.com/farhanshares/design-system" target="_blank" rel="noopener noreferrer">GitHub repository <span aria-hidden="true">↗</span></a></li>
+        <li><a href="https://farhan.app" target="_blank" rel="noopener noreferrer">Built by Farhan <span aria-hidden="true">↗</span></a></li>
+        <li><a href="https://buymeacoffee.com/farhan" target="_blank" rel="noopener noreferrer">Buy me a coffee ☕ <span aria-hidden="true">↗</span></a></li>
+      </ul>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  (() => {
+    const dlg = document.getElementById('about-modal');
+    if (!dlg) return;
+    document.querySelectorAll('[data-about-open]').forEach(el => {
+      el.addEventListener('click', () => { if (!dlg.open) dlg.showModal(); });
+    });
+    dlg.querySelectorAll('[data-about-close]').forEach(el => {
+      el.addEventListener('click', () => dlg.close());
+    });
+    dlg.addEventListener('click', (e) => {
+      if (e.target === dlg) dlg.close();
+    });
+  })();
+</script>
 
 <script src="app.js"></script>
 </body>

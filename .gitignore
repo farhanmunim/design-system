@@ -2,3 +2,9 @@ node_modules/
 archive/
 AGENTS.md
 .vscode/
+.DS_Store
+Thumbs.db
+*.log
+/screenshots
+CHANGELOG.md
+.env

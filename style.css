@@ -381,9 +381,21 @@ ul, ol { list-style: none; }
   border-top: 1px solid var(--app-border);
   padding: 10px 14px;
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 4px;
   flex-shrink: 0;
+  font-size: 0.6875rem;
+  color: var(--app-text-subtle);
+}
+
+.nav-footer__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nav-footer__row--credit {
+  color: var(--app-text-subtle);
 }
 
 .nav-footer__text {
@@ -393,13 +405,21 @@ ul, ol { list-style: none; }
 
 .nav-footer__link {
   font-size: 0.6875rem;
-  color: var(--accent, #0070f3);
+  color: var(--app-text-muted);
   text-decoration: none;
-  transition: opacity 0.15s;
+  transition: color 0.15s;
 }
 
 .nav-footer__link:hover {
-  opacity: 0.8;
+  color: var(--app-text);
+}
+
+.nav-footer__link--credit {
+  color: var(--app-text);
+}
+
+.nav-footer__link--credit:hover {
+  color: var(--app-accent);
 }
 
 .nav-footer__sep {
@@ -3261,3 +3281,171 @@ ul, ol { list-style: none; }
     background: var(--app-text-subtle);
   }
 }
+
+/* ═══════════════════════════════ ABOUT MODAL ═══════════════════════════════ */
+.about-modal {
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--app-border);
+  border-radius: var(--app-radius-lg);
+  background: var(--app-elevated);
+  color: var(--app-text);
+  width: 460px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 48px);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.45);
+  overflow: hidden;
+  position: relative;
+}
+
+.about-modal[open] {
+  animation: modal-in 180ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.about-modal::backdrop {
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(3px);
+}
+
+.about-modal__inner {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 48px);
+}
+
+.about-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--app-text-muted);
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: var(--app-radius);
+  transition: color 0.15s, background 0.15s, border-color 0.15s;
+}
+.about-modal__close:hover {
+  color: var(--app-text);
+  background: var(--app-border-subtle);
+  border-color: var(--app-border);
+}
+
+.about-modal__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px 16px;
+  border-bottom: 1px solid var(--app-border);
+}
+
+.about-modal__logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--app-radius);
+  border: 1px solid var(--app-border);
+  background: var(--app-bg);
+  flex-shrink: 0;
+}
+
+.about-modal__heading { min-width: 0; }
+
+.about-modal__title {
+  margin: 0 0 2px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--app-text);
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.about-modal__version {
+  font-family: var(--app-font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--app-text-subtle);
+  letter-spacing: 0.03em;
+}
+
+.about-modal__tagline {
+  margin: 0;
+  font-size: 12px;
+  color: var(--app-text-muted);
+}
+
+.about-modal__body {
+  padding: 16px 20px 18px;
+  overflow-y: auto;
+}
+
+.about-modal__intro,
+.about-modal__note {
+  margin: 0 0 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--app-text-muted);
+}
+
+.about-modal__note {
+  font-size: 12px;
+  color: var(--app-text-subtle);
+}
+
+.about-modal__links {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 12px 0 0;
+  border-top: 1px solid var(--app-border);
+  display: flex;
+  flex-direction: column;
+}
+
+.about-modal__links a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 10px;
+  margin: 0 -10px;
+  border-radius: var(--app-radius-sm);
+  font-size: 13px;
+  color: var(--app-text);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+.about-modal__links a span {
+  color: var(--app-text-subtle);
+  font-family: var(--app-font-mono);
+  font-size: 12px;
+}
+.about-modal__links a:hover {
+  background: var(--app-border-subtle);
+  color: var(--app-accent);
+}
+.about-modal__links a:hover span { color: var(--app-accent); }
+.nav-footer__about,
+.mobile-footer__link {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.mobile-footer__credit a {
+  color: var(--app-text);
+  text-decoration: none;
+}
+.mobile-footer__credit a:hover { color: var(--app-accent); }
