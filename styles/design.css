@@ -1,0 +1,95 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   Design workspace — layout, token editor, and the scoped live preview.
+   Preview components live under `.ds-preview`, which receives the user's
+   token custom properties inline; they mirror cssEngine's framework output.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.ds { display: flex; width: 100%; min-height: 0; }
+.ds__main { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.ds__side { width: 400px; flex: none; display: flex; flex-direction: column; border-left: 1px solid var(--app-border); min-height: 0; }
+
+.ds-pane-head { display: flex; align-items: center; height: 40px; padding: 0 14px; border-bottom: 1px solid var(--app-border); flex: none; }
+.ds-pane-title { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--app-fg-muted); }
+
+.ds-preview-pane { flex: 1; overflow: auto; padding: 28px; background: var(--app-surface); }
+.ds-preview {
+  max-width: 860px; margin: 0 auto; padding: 32px; border-radius: 16px;
+  background: var(--bg); color: var(--fg); border: 1px solid var(--border);
+  font-family: var(--font-sans); font-size: var(--fs-base); line-height: var(--lh-normal);
+}
+
+.pv-section { padding: 20px 0; border-bottom: 1px solid var(--border); }
+.pv-section:last-child { border-bottom: 0; }
+.pv-section__title { margin: 0 0 14px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--fg-muted); }
+.pv-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.pv-stack { display: flex; flex-direction: column; gap: 10px; max-width: 380px; }
+
+.pv-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 12px; }
+.pv-swatch { display: flex; flex-direction: column; gap: 6px; }
+.pv-swatch__chip { height: 46px; border-radius: 10px; border: 1px solid var(--border); }
+.pv-swatch__name { font-family: var(--font-mono); font-size: 11px; color: var(--fg-muted); }
+
+.pv-type h1 { font-size: var(--fs-3xl); line-height: var(--lh-tight); font-weight: var(--weight-bold); margin: 0 0 8px; }
+.pv-type h2 { font-size: var(--fs-2xl); line-height: var(--lh-tight); font-weight: var(--weight-bold); margin: 0 0 8px; }
+.pv-type h3 { font-size: var(--fs-xl); line-height: var(--lh-tight); font-weight: var(--weight-medium); margin: 0 0 8px; }
+.pv-type p { margin: 0 0 12px; }
+
+/* Preview component styles (mirror cssEngine framework output) */
+.ds-preview .btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2); padding: var(--sp-2) var(--sp-4); font: inherit; font-weight: var(--weight-medium); border-radius: var(--radius-md); border: 1px solid transparent; cursor: pointer; transition: background .15s, border-color .15s, opacity .15s; }
+.ds-preview .btn--primary { background: var(--accent); color: var(--accent-fg); }
+.ds-preview .btn--primary:hover { background: var(--accent-hover); }
+.ds-preview .btn--secondary { background: var(--surface); color: var(--fg); border-color: var(--border); }
+.ds-preview .btn--secondary:hover { background: var(--surface-2); }
+.ds-preview .btn--ghost { background: transparent; color: var(--fg); }
+.ds-preview .btn--ghost:hover { background: var(--surface); }
+.ds-preview .btn--danger { background: var(--danger); color: var(--accent-fg); }
+.ds-preview .btn:disabled { opacity: .5; cursor: not-allowed; }
+.ds-preview a { color: var(--accent); }
+.ds-preview code { font-family: var(--font-mono); font-size: .9em; background: var(--surface-2); padding: .1em .35em; border-radius: var(--radius-sm); }
+.ds-preview .badge { display: inline-flex; align-items: center; padding: .15em var(--sp-2); font-size: var(--fs-sm); font-weight: var(--weight-medium); border-radius: var(--radius-full); background: var(--surface-2); color: var(--fg-muted); }
+.ds-preview .badge--accent { background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent); }
+.ds-preview .badge--success { background: color-mix(in srgb, var(--success) 16%, transparent); color: var(--success); }
+.ds-preview .badge--danger { background: color-mix(in srgb, var(--danger) 16%, transparent); color: var(--danger); }
+.ds-preview .input { width: 100%; padding: var(--sp-2) var(--sp-3); font: inherit; color: var(--fg); background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-md); }
+.ds-preview .input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 24%, transparent); }
+.ds-preview .card { padding: var(--sp-5); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); max-width: 360px; }
+.ds-preview .card h3 { margin: 0 0 var(--sp-2); }
+.ds-preview .card p { margin: 0 0 var(--sp-4); color: var(--fg-muted); }
+.ds-preview .alert { padding: var(--sp-3) var(--sp-4); border-radius: var(--radius-md); border: 1px solid var(--border); background: var(--surface); }
+.ds-preview .alert--success { border-color: color-mix(in srgb, var(--success) 40%, transparent); background: color-mix(in srgb, var(--success) 10%, transparent); }
+.ds-preview .alert--danger { border-color: color-mix(in srgb, var(--danger) 40%, transparent); background: color-mix(in srgb, var(--danger) 10%, transparent); }
+
+/* ── Token editor ───────────────────────────────────────────────────── */
+.ds-editor { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.ds-editor__list { flex: 1; overflow: auto; padding: 8px 12px 20px; }
+.tk-group { margin-top: 12px; }
+.tk-group__head { display: flex; align-items: center; justify-content: space-between; padding: 6px 2px; position: sticky; top: 0; background: var(--app-bg); z-index: 1; }
+.tk-group__label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--app-fg-muted); }
+.tk-add { width: 20px; height: 20px; border: 1px solid var(--app-border); border-radius: 5px; background: transparent; color: var(--app-fg-muted); cursor: pointer; line-height: 1; }
+.tk-add:hover { background: var(--app-surface); color: var(--app-fg); }
+.tk { padding: 8px; border-radius: 8px; margin-bottom: 4px; }
+.tk:hover { background: var(--app-surface); }
+.tk-row { display: flex; align-items: center; gap: 6px; }
+.tk-row--dark { margin-top: 5px; padding-left: 4px; }
+.tk-moon { display: inline-flex; color: var(--app-fg-muted); }
+.tk-moon svg { width: 12px; height: 12px; }
+.tk-name { width: 116px; flex: none; font-family: var(--app-mono); font-size: 11.5px; }
+.tk-valwrap { display: flex; align-items: center; gap: 6px; flex: 1; min-width: 0; }
+.tk-val { flex: 1; min-width: 0; font-family: var(--app-mono); font-size: 11.5px; }
+.tk-name, .tk-val { height: 28px; padding: 0 8px; border: 1px solid var(--app-border); border-radius: 6px; background: var(--app-bg); color: var(--app-fg); }
+.tk-name:focus, .tk-val:focus { outline: none; border-color: var(--app-accent); }
+.tk-swatch { width: 28px; height: 28px; flex: none; padding: 0; border: 1px solid var(--app-border); border-radius: 6px; background: none; cursor: pointer; }
+.tk-desc { display: block; margin-top: 5px; font-size: 11px; color: var(--app-fg-muted); }
+
+/* ── CSS output panel ───────────────────────────────────────────────── */
+.ds-css { height: 40%; min-height: 160px; flex: none; display: flex; flex-direction: column; border-top: 1px solid var(--app-border); }
+.ds-css__head { display: flex; align-items: center; height: 38px; padding: 0 10px; border-bottom: 1px solid var(--app-border); }
+.ds-css__tabs { display: flex; gap: 2px; }
+.ds-css__tab { padding: 4px 10px; border: 0; border-radius: 6px; background: transparent; color: var(--app-fg-muted); font: inherit; font-size: 12px; font-weight: 500; cursor: pointer; }
+.ds-css__tab.is-active { background: var(--app-surface); color: var(--app-fg); }
+.ds-css__pre { flex: 1; margin: 0; padding: 12px; overflow: auto; background: var(--app-surface); }
+
+@media (max-width: 900px) {
+  .ds { flex-direction: column; }
+  .ds__side { width: 100%; border-left: 0; border-top: 1px solid var(--app-border); max-height: 55%; }
+}

@@ -1,0 +1,73 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   Animation Studio — layout, stage, and inspector.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.studio { display: flex; flex-direction: column; width: 100%; min-height: 0; }
+.studio__top { flex: 1; min-height: 0; display: flex; }
+.studio__bottom { flex: none; height: 300px; border-top: 1px solid var(--app-border); display: flex; }
+
+.studio__stage { flex: 1; min-width: 0; display: flex; flex-direction: column; position: relative; }
+.studio__add { position: absolute; top: 12px; left: 12px; z-index: 5; display: flex; gap: 6px; padding: 5px; background: var(--app-bg); border: 1px solid var(--app-border); border-radius: var(--app-radius); box-shadow: var(--app-shadow); }
+
+/* ── Stage ──────────────────────────────────────────────────────────── */
+.stage-wrap { flex: 1; min-height: 0; display: flex; }
+.stage-frame {
+  flex: 1; min-width: 0; display: flex; align-items: center; justify-content: center;
+  overflow: hidden; padding: 16px;
+  background:
+    linear-gradient(var(--app-surface) 0 0) padding-box,
+    repeating-conic-gradient(var(--app-surface-2) 0 25%, transparent 0 50%) 0 0 / 22px 22px;
+}
+/* Token fallbacks so default elements that reference var(--accent) etc. render
+   visibly in the studio preview (these are preview-only defaults). */
+.stage-surface { --accent: #6366f1; --accent-fg: #ffffff; --surface: #ffffff; --fg: #14171c; }
+:root[data-theme="dark"] .stage-surface { --accent: #818cf8; --surface: #14171c; --fg: #eef1f5; }
+.stage-surface { position: relative; flex: none; transform-origin: center center; border-radius: 6px; box-shadow: var(--app-shadow); overflow: hidden; }
+.stage-el {
+  position: absolute; display: flex; align-items: center; justify-content: center;
+  border: 0; cursor: grab; user-select: none; will-change: transform, opacity;
+  outline: 2px solid transparent; outline-offset: 2px;
+}
+.stage-el:active { cursor: grabbing; }
+.stage-el--text { background: transparent !important; }
+.stage-el.is-selected { outline-color: var(--app-accent); }
+
+/* ── Inspector ──────────────────────────────────────────────────────── */
+.insp { width: 264px; flex: none; border-left: 1px solid var(--app-border); display: flex; flex-direction: column; min-height: 0; background: var(--app-bg); }
+.insp__head { height: 40px; display: flex; align-items: center; padding: 0 14px; border-bottom: 1px solid var(--app-border); flex: none; }
+.insp__title { margin: 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; color: var(--app-fg-muted); }
+.insp__body { flex: 1; overflow: auto; padding: 4px 0 20px; }
+.insp__section { padding: 12px 14px; border-bottom: 1px solid var(--app-border); }
+.insp__section-title { margin: 0 0 10px; font-size: 12px; font-weight: 600; color: var(--app-fg); }
+.insp__breadcrumb { margin-bottom: 8px; }
+.insp__back { border: 0; background: transparent; color: var(--app-fg-muted); font: inherit; font-size: 12px; cursor: pointer; padding: 0; }
+.insp__back:hover { color: var(--app-fg); }
+.insp__field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; }
+.insp__label { font-size: 11px; color: var(--app-fg-muted); }
+.insp__grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.insp__input { height: 30px; padding: 0 8px; border: 1px solid var(--app-border); border-radius: 6px; background: var(--app-bg); color: var(--app-fg); font: inherit; font-size: 12.5px; width: 100%; }
+.insp__input:focus { outline: none; border-color: var(--app-accent); }
+select.insp__input { cursor: pointer; }
+.insp__color { display: flex; gap: 6px; align-items: center; }
+.insp__swatch { width: 30px; height: 30px; flex: none; padding: 0; border: 1px solid var(--app-border); border-radius: 6px; background: none; cursor: pointer; }
+.insp__input--color { font-family: var(--app-mono); font-size: 11.5px; }
+.insp__hint { margin: 0 0 8px; font-size: 11.5px; color: var(--app-fg-muted); line-height: 1.5; }
+.insp__chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.insp__chip { padding: 5px 10px; border: 1px solid var(--app-border); border-radius: 999px; background: transparent; color: var(--app-fg); font: inherit; font-size: 12px; cursor: pointer; }
+.insp__chip:hover:not(:disabled) { border-color: var(--app-accent); color: var(--app-accent); }
+.insp__chip.is-on { background: var(--app-surface); color: var(--app-fg-muted); cursor: default; }
+.insp__el-row { display: flex; align-items: center; gap: 8px; width: 100%; padding: 7px 8px; border: 0; border-radius: 7px; background: transparent; color: var(--app-fg); font: inherit; cursor: pointer; text-align: left; }
+.insp__el-row:hover { background: var(--app-surface); }
+.insp__el-icon { display: inline-flex; color: var(--app-fg-muted); }
+.insp__el-name { flex: 1; font-size: 13px; }
+.insp__el-type { font-size: 11px; color: var(--app-fg-muted); }
+.insp__delete { width: 100%; margin-top: 4px; }
+.insp__ease-preview { display: flex; justify-content: center; padding: 8px 0; }
+.ease-curve { width: 120px; height: 60px; }
+.ease-curve__guide { stroke: var(--app-border-strong); stroke-width: 1; stroke-dasharray: 3 3; }
+.ease-curve__path { fill: none; stroke: var(--app-accent); stroke-width: 2; }
+
+@media (max-width: 900px) {
+  .insp { width: 220px; }
+  .studio__bottom { height: 240px; }
+}
