@@ -1,28 +1,74 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Design System Builder — farhan.app</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Design System Builder — Token-driven CSS design system generator</title>
 
-  <!-- Favicon (inline SVG — matches UI logo) -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Crect x='2' y='2' width='7' height='7' rx='1.5' fill='%230070f3'/%3E%3Crect x='11' y='2' width='7' height='7' rx='1.5' fill='%230070f3' opacity='0.5'/%3E%3Crect x='2' y='11' width='7' height='7' rx='1.5' fill='%230070f3' opacity='0.5'/%3E%3Crect x='11' y='11' width='7' height='7' rx='1.5' fill='%230070f3' opacity='0.3'/%3E%3C/svg%3E" />
+  <!-- Apply theme before paint to avoid a flash of the wrong theme -->
+  <script>
+    (function () {
+      try {
+        var saved = JSON.parse(localStorage.getItem('dsb-v4-state-v1') || 'null');
+        var stored = saved && saved.settings && saved.settings.appTheme;
+        var theme = stored || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (_) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
 
   <!-- Primary meta -->
-  <meta name="description" content="A token-driven design system builder with live preview and production-ready CSS output. Built by Farhan — farhan.app" />
-  <meta name="author" content="farhan.app" />
+  <meta name="description" content="Free, open-source design system builder. Edit colour, typography, spacing, radius, shadow and motion tokens, preview a full component library live, and export production-ready CSS custom properties." />
+  <meta name="author" content="Farhan" />
+  <meta name="robots" content="index, follow, max-image-preview:large" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)" />
+  <link rel="canonical" href="https://design-system.farhan.app/" />
+
+  <!-- Icons -->
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Design System Builder" />
-  <meta property="og:title" content="Design System Builder — farhan.app" />
-  <meta property="og:description" content="A token-driven design system builder with live preview and production-ready CSS output. Define tokens, see every component update instantly." />
-  <meta property="og:url" content="https://farhan.app" />
+  <meta property="og:title" content="Design System Builder — Token-driven CSS design system generator" />
+  <meta property="og:description" content="Edit design tokens, preview a full component library live, and export production-ready CSS. Free, open source, runs entirely in your browser." />
+  <meta property="og:url" content="https://design-system.farhan.app/" />
+  <meta property="og:image" content="https://design-system.farhan.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Design System Builder — a token editor beside a live component preview" />
+  <meta property="og:locale" content="en_GB" />
 
   <!-- Twitter / X -->
-  <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Design System Builder — farhan.app" />
-  <meta name="twitter:description" content="A token-driven design system builder with live preview and production-ready CSS output. Built by Farhan — farhan.app" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Design System Builder — Token-driven CSS design system generator" />
+  <meta name="twitter:description" content="Edit design tokens, preview a full component library live, and export production-ready CSS. Free, open source, runs entirely in your browser." />
+  <meta name="twitter:image" content="https://design-system.farhan.app/og-image.png" />
+  <meta name="twitter:image:alt" content="Design System Builder — a token editor beside a live component preview" />
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Design System Builder",
+    "url": "https://design-system.farhan.app/",
+    "description": "A token-driven design system builder with live preview and production-ready CSS output.",
+    "applicationCategory": "DesignApplication",
+    "operatingSystem": "Any",
+    "browserRequirements": "Requires JavaScript",
+    "isAccessibleForFree": true,
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "Farhan", "url": "https://farhan.app" },
+    "softwareVersion": "4.4",
+    "license": "https://opensource.org/licenses/MIT",
+    "screenshot": "https://design-system.farhan.app/og-image.png"
+  }
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -31,322 +77,436 @@
 </head>
 <body>
 
-<!-- ═══════════════════════════════ HEADER ═══════════════════════════════ -->
-<header class="app-header" role="banner">
-  <a class="app-header__brand" href="/" title="Reload">
+<a class="skip-link" href="#preview-main">Skip to preview</a>
+
+<!-- ═══════════════════════════════ TOPBAR ═══════════════════════════════ -->
+<header class="app-header">
+  <a class="app-header__brand" href="/" aria-label="Design System Builder — home">
     <span class="app-header__logo" aria-hidden="true">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <rect x="2" y="2" width="7" height="7" rx="1.5" fill="var(--app-accent)"/>
-        <rect x="11" y="2" width="7" height="7" rx="1.5" fill="var(--app-accent)" opacity="0.5"/>
-        <rect x="2" y="11" width="7" height="7" rx="1.5" fill="var(--app-accent)" opacity="0.5"/>
-        <rect x="11" y="11" width="7" height="7" rx="1.5" fill="var(--app-accent)" opacity="0.3"/>
-      </svg>
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3 3h4v4H3z"/><path d="M9 3h4v4H9z" opacity=".55"/><path d="M3 9h4v4H3z" opacity=".55"/><path d="M9 9h4v4H9z" opacity=".3"/></svg>
     </span>
     <span class="app-header__title">Design System</span>
-    <span class="app-header__version">v4.3</span>
   </a>
+  <a href="changelog.html" class="version-pill" data-tooltip="View changelog" data-tooltip-pos="below">v4.4</a>
 
-  <!-- Center zone — document actions -->
-  <div class="app-header__center">
+  <span class="app-header__spacer"></span>
+
+  <!-- Document actions -->
+  <div class="app-header__center" role="group" aria-label="Document actions">
     <div class="app-header__group">
-      <button class="app-btn app-btn--ghost app-btn--icon" id="btn-reset-all" aria-label="Reset all tokens to defaults" data-tooltip="Reset to defaults" data-tooltip-pos="below">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+      <button class="app-btn app-btn--ghost app-btn--icon" id="btn-reset-all" type="button" aria-label="Reset all tokens to defaults" data-tooltip="Reset to defaults" data-tooltip-pos="below">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
       </button>
-      <button class="app-btn app-btn--ghost app-btn--icon" id="btn-undo" aria-label="Undo" data-tooltip="Undo (Ctrl+Z)" data-tooltip-pos="below" disabled>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6 2.3L3 13"/></svg>
-        <span class="app-badge" id="undo-count"></span>
+      <button class="app-btn app-btn--ghost app-btn--icon" id="btn-undo" type="button" aria-label="Undo" data-tooltip="Undo (Ctrl+Z)" data-tooltip-pos="below" disabled>
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+        <span class="app-badge" id="undo-count" aria-hidden="true"></span>
       </button>
-      <button class="app-btn app-btn--ghost app-btn--icon" id="btn-redo" aria-label="Redo" data-tooltip="Redo (Ctrl+Y)" data-tooltip-pos="below" disabled>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 019-9 9 9 0 016 2.3L21 13"/></svg>
-        <span class="app-badge" id="redo-count"></span>
+      <button class="app-btn app-btn--ghost app-btn--icon" id="btn-redo" type="button" aria-label="Redo" data-tooltip="Redo (Ctrl+Y)" data-tooltip-pos="below" disabled>
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"/></svg>
+        <span class="app-badge" id="redo-count" aria-hidden="true"></span>
       </button>
     </div>
   </div>
 
-  <!-- Right zone — layout controls + utilities -->
+  <div class="app-header__sep" aria-hidden="true"></div>
+
+  <!-- Layout + utilities -->
   <div class="app-header__end">
-    <div class="app-header__group">
-      <button class="app-btn app-btn--ghost app-btn--icon" id="btn-toggle-nav" aria-label="Hide nav" data-tooltip="Hide nav" data-tooltip-pos="below" aria-pressed="false">
-        <svg class="icon-nav-hide" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
-        <svg class="icon-nav-show" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+    <div class="app-header__group app-header__group--panels" role="group" aria-label="Layout">
+      <button class="app-btn app-btn--ghost app-btn--icon" id="btn-toggle-nav" type="button" aria-label="Collapse navigation" aria-pressed="false" aria-controls="app-nav" data-tooltip="Collapse navigation" data-tooltip-pos="below">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 3v18"/></svg>
       </button>
-      <button class="app-btn app-btn--ghost app-btn--icon" id="btn-toggle-editor" aria-label="Hide token editor" data-tooltip="Hide token editor" data-tooltip-pos="below" aria-pressed="false">
-        <svg class="icon-editor-hide" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="12" y1="4" x2="12" y2="20" stroke-width="1.5" opacity="0.5"/></svg>
-        <svg class="icon-editor-show" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      <button class="app-btn app-btn--ghost app-btn--icon" id="btn-toggle-editor" type="button" aria-label="Hide token editor" aria-pressed="false" aria-controls="app-editor" data-tooltip="Hide token editor" data-tooltip-pos="below">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/></svg>
+      </button>
+    </div>
+
+    <div class="app-header__sep" aria-hidden="true"></div>
+
+    <div class="app-header__group app-header__group--io" role="group" aria-label="Import and export">
+      <button class="app-btn app-btn--ghost" id="btn-import" type="button" data-tooltip="Import token JSON" data-tooltip-pos="below">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span class="app-header__btn-label">Import</span>
+        <span class="sr-only">token JSON</span>
+      </button>
+      <button class="app-btn app-btn--ghost" id="btn-export" type="button" data-tooltip="Export token JSON" data-tooltip-pos="below">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span class="app-header__btn-label">Export</span>
+        <span class="sr-only">token JSON</span>
       </button>
     </div>
 
     <div class="app-header__sep" aria-hidden="true"></div>
 
     <div class="app-header__group">
-      <button class="app-btn app-btn--ghost" id="btn-import" data-tooltip="Import token JSON" data-tooltip-pos="below">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        Import
+      <button class="topbar-search" id="btn-cmdpalette" type="button" aria-label="Search sections and tokens" aria-haspopup="dialog" aria-keyshortcuts="Control+K Meta+K">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <span class="topbar-search__label" aria-hidden="true">Search…</span>
+        <kbd aria-hidden="true">⌘K</kbd>
       </button>
-      <button class="app-btn app-btn--ghost" id="btn-export" data-tooltip="Export token JSON" data-tooltip-pos="below">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Export
+      <button class="app-btn app-btn--ghost app-btn--icon" id="btn-settings" type="button" aria-label="Settings" aria-haspopup="dialog" aria-expanded="false" aria-controls="settings-popover" data-tooltip="Settings" data-tooltip-pos="below-left">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
-    </div>
-
-    <div class="app-header__sep" aria-hidden="true"></div>
-
-    <div class="app-header__group">
-      <button class="app-btn app-btn--ghost app-btn--icon" id="btn-settings" aria-label="Settings" data-tooltip="Settings" data-tooltip-pos="below-left">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
-      </button>
-      <button class="app-btn app-btn--ghost app-btn--icon" id="btn-theme" aria-label="Toggle dark/light mode" data-tooltip="Toggle theme" data-tooltip-pos="below-left">
-        <svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-        <svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-      </button>
-      <button class="app-btn app-btn--ghost app-btn--icon" id="btn-cmdpalette" aria-label="Command palette" data-tooltip="Search" data-tooltip-pos="below-left">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <button class="app-btn app-btn--ghost app-btn--icon" id="btn-theme" type="button" aria-label="Switch to dark theme" data-tooltip="Toggle theme" data-tooltip-pos="below-left">
+        <svg class="icon icon-sm icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="icon icon-sm icon-sun" viewBox="0 0 24 24" aria-hidden="true" style="display:none"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
       </button>
     </div>
   </div>
 </header>
 
-<!-- ═══════════════════════════════ MAIN LAYOUT ═══════════════════════════════ -->
-<div class="app-layout">
+<!-- ═══════════════════════════════ WORKSPACE ═══════════════════════════════ -->
+<div class="app-layout" id="workspace">
+  <div class="app-overlay" id="app-overlay" aria-hidden="true"></div>
 
-  <!-- LEFT NAV -->
-  <nav class="app-nav" aria-label="Design system sections">
-    <div class="app-nav__scroll">
-
-      <div class="nav-group">
-        <span class="nav-group__label">Overview</span>
-        <a class="nav-item" href="#section-getting-started" data-section="getting-started">
-          <svg class="nav-item__icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
-          Getting Started
-        </a>
-      </div>
-
-      <div class="nav-group">
-        <span class="nav-group__label">Colour</span>
-        <a class="nav-item" href="#section-colour-primitives" data-section="colour-primitives" data-token-category="color-primitives">
-          <svg class="nav-item__icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20"/></svg>
-          Primitives
-          <span class="nav-item__modified-dot" data-category="color-primitives" aria-hidden="true"></span>
-        </a>
-        <a class="nav-item" href="#section-colour-semantic" data-section="colour-semantic" data-token-category="color-semantic">
-          <svg class="nav-item__icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
-          Semantic
-          <span class="nav-item__modified-dot" data-category="color-semantic" aria-hidden="true"></span>
-        </a>
-      </div>
-
-      <div class="nav-group">
-        <span class="nav-group__label">Typography</span>
-        <a class="nav-item" href="#section-type-scale" data-section="type-scale" data-token-category="type-scale">
-          <svg class="nav-item__icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
-          Type Scale
-          <span class="nav-item__modified-dot" data-category="type-scale" aria-hidden="true"></span>
-        </a>
-        <a class="nav-item" href="#section-type-fluid" data-section="type-fluid" data-token-category="type-fluid">
-          Fluid Type
-          <span class="nav-item__modified-dot" data-category="type-fluid" aria-hidden="true"></span>
-        </a>
-        <a class="nav-item" href="#section-headings" data-section="headings">Headings</a>
-        <a class="nav-item" href="#section-body-text" data-section="body-text">Body Text</a>
-        <a class="nav-item" href="#section-links" data-section="links">Links</a>
-        <a class="nav-item" href="#section-lists" data-section="lists">Lists</a>
-        <a class="nav-item" href="#section-code" data-section="code">Code</a>
-        <a class="nav-item" href="#section-blockquote" data-section="blockquote">Blockquote</a>
-      </div>
-
-      <div class="nav-group">
-        <span class="nav-group__label">Spacing</span>
-        <a class="nav-item" href="#section-spacing" data-section="spacing" data-token-category="spacing">
-          Spacing Scale
-          <span class="nav-item__modified-dot" data-category="spacing" aria-hidden="true"></span>
-        </a>
-        <a class="nav-item" href="#section-spacing-fluid" data-section="spacing-fluid" data-token-category="spacing-fluid">
-          Fluid Spacing
-          <span class="nav-item__modified-dot" data-category="spacing-fluid" aria-hidden="true"></span>
-        </a>
-      </div>
-
-      <div class="nav-group">
-        <span class="nav-group__label">Tokens</span>
-        <a class="nav-item" href="#section-radius" data-section="radius" data-token-category="radius">
-          Radius
-          <span class="nav-item__modified-dot" data-category="radius" aria-hidden="true"></span>
-        </a>
-        <a class="nav-item" href="#section-shadow" data-section="shadow" data-token-category="shadow">
-          Shadow
-          <span class="nav-item__modified-dot" data-category="shadow" aria-hidden="true"></span>
-        </a>
-        <a class="nav-item" href="#section-motion" data-section="motion" data-token-category="motion">
-          Motion
-          <span class="nav-item__modified-dot" data-category="motion" aria-hidden="true"></span>
-        </a>
-      </div>
-
-      <div class="nav-group">
-        <span class="nav-group__label">Components</span>
-        <a class="nav-item" href="#section-buttons" data-section="buttons">Buttons</a>
-        <a class="nav-item" href="#section-input" data-section="input">Input</a>
-        <a class="nav-item" href="#section-textarea" data-section="textarea">Textarea</a>
-        <a class="nav-item" href="#section-select" data-section="select">Select</a>
-        <a class="nav-item" href="#section-checkbox-radio" data-section="checkbox-radio">Checkbox &amp; Radio</a>
-        <a class="nav-item" href="#section-toggle" data-section="toggle">Toggle</a>
-        <a class="nav-item" href="#section-badge" data-section="badge">Badge</a>
-        <a class="nav-item" href="#section-alert" data-section="alert">Alert</a>
-        <a class="nav-item" href="#section-card" data-section="card">Card</a>
-        <a class="nav-item" href="#section-modal" data-section="modal">Modal</a>
-        <a class="nav-item" href="#section-divider" data-section="divider">Divider</a>
-        <a class="nav-item" href="#section-table" data-section="table">Table</a>
-        <a class="nav-item" href="#section-tabs" data-section="tabs">Tabs</a>
-        <a class="nav-item" href="#section-tooltip" data-section="tooltip">Tooltip</a>
-        <a class="nav-item" href="#section-avatar" data-section="avatar">Avatar</a>
-      </div>
-
+  <!-- LEFT PANEL — section navigation -->
+  <nav class="app-nav" id="app-nav" aria-label="Design system sections">
+    <div class="panel-hd">
+      <h2 class="panel-hd__title" id="nav-title">Navigation</h2>
+      <button class="panel-hd__toggle" id="nav-collapse" type="button" aria-label="Collapse navigation" aria-expanded="true" aria-controls="app-nav">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
     </div>
 
-    <div class="nav-footer">
-      <div class="nav-footer__row">
-        <button class="nav-footer__link nav-footer__about" type="button" data-about-open>About</button>
-        <span class="nav-footer__dot" aria-hidden="true"></span>
-        <a class="nav-footer__link" href="changelog.html">Changelog</a>
+    <div class="panel-search-wrap">
+      <label class="panel-search">
+        <span class="sr-only">Filter sections</span>
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg>
+        <input type="search" id="nav-filter" placeholder="Filter…" autocomplete="off" spellcheck="false" aria-controls="nav-list" />
+      </label>
+    </div>
+
+    <div class="app-nav__scroll" id="nav-list">
+      <div class="nav-group">
+        <span class="nav-group__label" id="nav-group-overview">Overview</span>
+        <ul aria-labelledby="nav-group-overview">
+          <li><a class="nav-item" href="#section-getting-started" data-section="getting-started">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/></svg>
+            <span class="nav-item__text">Getting Started</span>
+          </a></li>
+        </ul>
       </div>
-      <div class="nav-footer__row nav-footer__row--credit">
-        Built by <a class="nav-footer__link nav-footer__link--credit" href="https://farhan.app" target="_blank" rel="noopener noreferrer">Farhan</a>
+
+      <div class="nav-group">
+        <span class="nav-group__label" id="nav-group-colour">Colour</span>
+        <ul aria-labelledby="nav-group-colour">
+          <li><a class="nav-item" href="#section-colour-primitives" data-section="colour-primitives" data-token-category="color-primitives">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+            <span class="nav-item__text">Primitives</span>
+            <span class="nav-item__modified-dot" data-category="color-primitives"><span class="sr-only">(modified)</span></span>
+          </a></li>
+          <li><a class="nav-item" href="#section-colour-semantic" data-section="colour-semantic" data-token-category="color-semantic">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83Z"/><path d="m22 17.65-9.17 4.16a2 2 0 0 1-1.66 0L2 17.65"/><path d="m22 12.65-9.17 4.16a2 2 0 0 1-1.66 0L2 12.65"/></svg>
+            <span class="nav-item__text">Semantic</span>
+            <span class="nav-item__modified-dot" data-category="color-semantic"><span class="sr-only">(modified)</span></span>
+          </a></li>
+        </ul>
       </div>
+
+      <div class="nav-group">
+        <span class="nav-group__label" id="nav-group-typography">Typography</span>
+        <ul aria-labelledby="nav-group-typography">
+          <li><a class="nav-item" href="#section-type-scale" data-section="type-scale" data-token-category="type-scale">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>
+            <span class="nav-item__text">Type Scale</span>
+            <span class="nav-item__modified-dot" data-category="type-scale"><span class="sr-only">(modified)</span></span>
+          </a></li>
+          <li><a class="nav-item" href="#section-type-fluid" data-section="type-fluid" data-token-category="type-fluid">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="18 8 22 12 18 16"/><polyline points="6 8 2 12 6 16"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+            <span class="nav-item__text">Fluid Type</span>
+            <span class="nav-item__modified-dot" data-category="type-fluid"><span class="sr-only">(modified)</span></span>
+          </a></li>
+          <li><a class="nav-item" href="#section-headings" data-section="headings">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12h12"/><path d="M6 20V4"/><path d="M18 20V4"/></svg>
+            <span class="nav-item__text">Headings</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-body-text" data-section="body-text">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="21" y1="6" x2="3" y2="6"/><line x1="15" y1="12" x2="3" y2="12"/><line x1="17" y1="18" x2="3" y2="18"/></svg>
+            <span class="nav-item__text">Body Text</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-links" data-section="links">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            <span class="nav-item__text">Links</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-lists" data-section="lists">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            <span class="nav-item__text">Lists</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-code" data-section="code">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            <span class="nav-item__text">Code</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-blockquote" data-section="blockquote">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2h.75c0 2.25.25 4-2.75 4v3c0 1 0 1 1 1z"/></svg>
+            <span class="nav-item__text">Blockquote</span>
+          </a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group">
+        <span class="nav-group__label" id="nav-group-spacing">Spacing</span>
+        <ul aria-labelledby="nav-group-spacing">
+          <li><a class="nav-item" href="#section-spacing" data-section="spacing" data-token-category="spacing">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="8 18 12 22 16 18"/><polyline points="8 6 12 2 16 6"/><line x1="12" y1="2" x2="12" y2="22"/></svg>
+            <span class="nav-item__text">Spacing Scale</span>
+            <span class="nav-item__modified-dot" data-category="spacing"><span class="sr-only">(modified)</span></span>
+          </a></li>
+          <li><a class="nav-item" href="#section-spacing-fluid" data-section="spacing-fluid" data-token-category="spacing-fluid">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+            <span class="nav-item__text">Fluid Spacing</span>
+            <span class="nav-item__modified-dot" data-category="spacing-fluid"><span class="sr-only">(modified)</span></span>
+          </a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group">
+        <span class="nav-group__label" id="nav-group-tokens">Tokens</span>
+        <ul aria-labelledby="nav-group-tokens">
+          <li><a class="nav-item" href="#section-radius" data-section="radius" data-token-category="radius">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="6"/></svg>
+            <span class="nav-item__text">Radius</span>
+            <span class="nav-item__modified-dot" data-category="radius"><span class="sr-only">(modified)</span></span>
+          </a></li>
+          <li><a class="nav-item" href="#section-shadow" data-section="shadow" data-token-category="shadow">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="14" height="14" rx="2"/><path d="M21 8v11a2 2 0 0 1-2 2H8"/></svg>
+            <span class="nav-item__text">Shadow</span>
+            <span class="nav-item__modified-dot" data-category="shadow"><span class="sr-only">(modified)</span></span>
+          </a></li>
+          <li><a class="nav-item" href="#section-motion" data-section="motion" data-token-category="motion">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+            <span class="nav-item__text">Motion</span>
+            <span class="nav-item__modified-dot" data-category="motion"><span class="sr-only">(modified)</span></span>
+          </a></li>
+        </ul>
+      </div>
+
+      <div class="nav-group">
+        <span class="nav-group__label" id="nav-group-components">Components</span>
+        <ul aria-labelledby="nav-group-components">
+          <li><a class="nav-item" href="#section-buttons" data-section="buttons">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 9 5 12 1.8-5.2L21 14Z"/><path d="M7.2 2.2 8 5.1"/><path d="m5.1 8-2.9-.8"/><path d="M14 4.1 12 6"/><path d="m6 12-1.9 2"/></svg>
+            <span class="nav-item__text">Buttons</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-input" data-section="input">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h1a3 3 0 0 1 3 3 3 3 0 0 1 3-3h1"/><path d="M13 20h-1a3 3 0 0 1-3-3 3 3 0 0 1-3 3H5"/><path d="M5 16H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1"/><path d="M13 8h7a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-7"/><path d="M9 7v10"/></svg>
+            <span class="nav-item__text">Input</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-textarea" data-section="textarea">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h6"/></svg>
+            <span class="nav-item__text">Textarea</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-select" data-section="select">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
+            <span class="nav-item__text">Select</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-checkbox-radio" data-section="checkbox-radio">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+            <span class="nav-item__text">Checkbox &amp; Radio</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-toggle" data-section="toggle">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="1" y="5" width="22" height="14" rx="7" ry="7"/><circle cx="8" cy="12" r="3"/></svg>
+            <span class="nav-item__text">Toggle</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-badge" data-section="badge">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+            <span class="nav-item__text">Badge</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-alert" data-section="alert">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            <span class="nav-item__text">Alert</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-card" data-section="card">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span class="nav-item__text">Card</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-modal" data-section="modal">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v4"/><path d="M2 8h20"/><path d="M6 4v4"/></svg>
+            <span class="nav-item__text">Modal</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-divider" data-section="divider">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span class="nav-item__text">Divider</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-table" data-section="table">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+            <span class="nav-item__text">Table</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-tabs" data-section="tabs">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 3v6M15 3v6"/></svg>
+            <span class="nav-item__text">Tabs</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-tooltip" data-section="tooltip">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span class="nav-item__text">Tooltip</span>
+          </a></li>
+          <li><a class="nav-item" href="#section-avatar" data-section="avatar">
+            <svg class="icon nav-item__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <span class="nav-item__text">Avatar</span>
+          </a></li>
+        </ul>
+      </div>
+
+      <p class="app-nav__empty" id="nav-empty" hidden>No sections match.</p>
     </div>
   </nav>
 
-  <!-- CENTER PREVIEW -->
-  <main class="app-preview" id="preview-main" aria-label="Design system preview">
-    <div class="app-preview__noise" aria-hidden="true"></div>
-    <div class="mobile-banner" role="status" aria-live="polite">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-      <p>Open on a wider screen for the full experience — token editor, controls, and CSS output.</p>
-    </div>
+  <!-- MAIN — live preview -->
+  <main class="app-preview" id="preview-main" aria-label="Live design system preview" tabindex="-1">
     <div class="app-preview__inner" id="preview-inner">
       <!-- Rendered by PreviewEngine -->
     </div>
-    <footer class="mobile-footer">
-      <span class="mobile-footer__credit">Built by <a href="https://farhan.app" target="_blank" rel="noopener noreferrer">Farhan</a></span>
-      <div class="mobile-footer__links">
-        <button type="button" class="mobile-footer__link" data-about-open>About</button>
-        <span class="mobile-footer__dot" aria-hidden="true"></span>
-        <a href="changelog.html">Changelog</a>
-      </div>
-    </footer>
   </main>
 
-  <!-- RIGHT EDITOR PANEL -->
-  <aside class="app-editor" aria-label="Token editor">
-
-    <div class="app-editor__header">
-      <div class="app-editor__title-row">
-        <h2 class="app-editor__section-title" id="editor-section-title">Tokens</h2>
-        <button class="app-btn app-btn--ghost app-btn--icon" id="btn-add-token" aria-label="Add custom token" title="Add token">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        </button>
-      </div>
-    </div>
-    <div class="app-editor__filter">
-      <div class="app-editor__search">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="search" id="token-search" placeholder="Search tokens in this section&#8230;" aria-label="Search tokens in this section" autocomplete="off" spellcheck="false" />
-      </div>
+  <!-- RIGHT PANEL — token editor -->
+  <aside class="app-editor" id="app-editor" aria-label="Token editor">
+    <div class="panel-hd">
+      <h2 class="panel-hd__title app-editor__section-title" id="editor-section-title">Tokens</h2>
+      <button class="app-btn app-btn--ghost app-btn--icon" id="btn-add-token" type="button" aria-label="Add custom token" data-tooltip="Add token" data-tooltip-pos="below-left">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+      <button class="panel-hd__toggle" id="editor-collapse" type="button" aria-label="Hide token editor" aria-expanded="true" aria-controls="app-editor">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
     </div>
 
-    <div class="app-editor__tokens" id="token-list" role="list" aria-label="Token list">
+    <div class="panel-search-wrap">
+      <label class="panel-search">
+        <span class="sr-only">Search tokens in this section</span>
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="search" id="token-search" placeholder="Search tokens in this section…" autocomplete="off" spellcheck="false" aria-controls="token-list" />
+      </label>
+    </div>
+
+    <div class="app-editor__tokens" id="token-list" aria-live="polite" aria-busy="false">
       <!-- Rendered by UI module -->
     </div>
 
     <!-- CSS Output Panel -->
-    <div class="css-panel" id="css-panel" data-state="normal">
+    <section class="css-panel" id="css-panel" data-state="normal" aria-labelledby="css-panel-title">
       <div class="css-panel__resize" aria-hidden="true"></div>
       <div class="css-panel__header">
         <div class="css-panel__header-left">
-          <button class="css-panel__toggle-btn" id="css-panel-toggle" aria-label="Toggle CSS panel" aria-expanded="true">
-            <svg class="css-panel__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+          <button class="css-panel__toggle-btn" id="css-panel-toggle" type="button" aria-label="Collapse CSS panel" aria-expanded="true" aria-controls="css-panel-body">
+            <svg class="css-panel__chevron icon icon-xs" viewBox="0 0 24 24" aria-hidden="true"><polyline points="18 15 12 9 6 15"/></svg>
           </button>
-          <span class="css-panel__title">CSS</span>
+          <h3 class="css-panel__title" id="css-panel-title">CSS</h3>
           <div class="css-tabs" role="tablist" aria-label="CSS view">
-            <button class="css-tabs__tab css-tabs__tab--active" role="tab" aria-selected="true" data-tab="tokens" id="css-tab-tokens">Tokens</button>
-            <button class="css-tabs__tab" role="tab" aria-selected="false" data-tab="framework" id="css-tab-framework">Framework</button>
+            <button class="css-tabs__tab css-tabs__tab--active" type="button" role="tab" aria-selected="true" aria-controls="css-panel-body" data-tab="tokens" id="css-tab-tokens">Tokens</button>
+            <button class="css-tabs__tab" type="button" role="tab" aria-selected="false" aria-controls="css-panel-body" data-tab="framework" id="css-tab-framework" tabindex="-1">Framework</button>
           </div>
         </div>
         <div class="css-panel__header-right">
-          <button class="app-btn app-btn--ghost app-btn--icon" id="css-maximize" aria-label="Maximize CSS panel" data-tooltip="Maximize / Restore">
-            <!-- expand icon — shown when not maximized -->
-            <svg id="css-maximize-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
-            <!-- restore icon — shown when maximized -->
-            <svg id="css-restore-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M8 3v3a2 2 0 01-2 2H3m18 0h-3a2 2 0 01-2-2V3m0 18v-3a2 2 0 012-2h3M3 16h3a2 2 0 012 2v3"/></svg>
+          <button class="app-btn app-btn--ghost app-btn--icon" id="css-maximize" type="button" aria-label="Maximize CSS panel" data-tooltip="Maximize / Restore">
+            <svg id="css-maximize-icon" class="icon icon-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+            <svg id="css-restore-icon" class="icon icon-xs" viewBox="0 0 24 24" aria-hidden="true" style="display:none"><path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/></svg>
           </button>
-          <button class="app-btn app-btn--ghost app-btn--icon" id="css-copy" aria-label="Copy CSS" data-tooltip="Copy CSS">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+          <button class="app-btn app-btn--ghost app-btn--icon" id="css-copy" type="button" aria-label="Copy CSS to clipboard" data-tooltip="Copy CSS">
+            <svg class="icon icon-xs" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
           </button>
-          <button class="app-btn app-btn--ghost app-btn--icon" id="css-download" aria-label="Download CSS file" data-tooltip="Download CSS" data-tooltip-pos="below-left">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <button class="app-btn app-btn--ghost app-btn--icon" id="css-download" type="button" aria-label="Download CSS file" data-tooltip="Download CSS" data-tooltip-pos="below-left">
+            <svg class="icon icon-xs" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </button>
         </div>
       </div>
-      <div class="css-panel__body" id="css-panel-body" aria-hidden="false">
+      <div class="css-panel__body" id="css-panel-body" role="tabpanel" aria-labelledby="css-tab-tokens" tabindex="0">
         <pre class="css-panel__pre" id="css-output"><code id="css-code" class="css-panel__code"></code></pre>
       </div>
-    </div>
-
+    </section>
   </aside>
+
+  <button class="right-collapse-tab" id="editor-expand" type="button" aria-label="Show token editor" aria-controls="app-editor" tabindex="-1">
+    <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+  </button>
 </div>
+
+<!-- ═══════════════════════════════ APP FOOTER ═══════════════════════════════ -->
+<footer class="app-footer">
+  <button type="button" class="app-footer__link" data-about-open>About</button>
+  <span class="app-footer__sep" aria-hidden="true"></span>
+  <a href="changelog.html">Changelog</a>
+  <span class="app-footer__sep" aria-hidden="true"></span>
+  <a href="https://github.com/farhanshares/design-system" target="_blank" rel="noopener noreferrer">GitHub<span class="sr-only"> (opens in a new tab)</span></a>
+  <span class="app-footer__spacer"></span>
+  <span class="app-footer__meta">Saved locally</span>
+  <span class="app-footer__sep" aria-hidden="true"></span>
+  <span class="app-footer__credit">Built by <a href="https://farhan.app" target="_blank" rel="noopener noreferrer">Farhan<span class="sr-only"> (opens in a new tab)</span></a></span>
+</footer>
+
+<!-- ═══════════════════════════════ MOBILE NAV ═══════════════════════════════ -->
+<nav class="mobile-nav" aria-label="Mobile">
+  <div class="mobile-nav__items">
+    <button type="button" class="mobile-nav__item is-active" id="mobile-nav-preview" aria-pressed="true">
+      <span class="mobile-nav__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+      Preview
+    </button>
+    <button type="button" class="mobile-nav__item" id="mobile-nav-sections" aria-pressed="false" aria-controls="app-nav">
+      <span class="mobile-nav__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span>
+      Sections
+    </button>
+    <button type="button" class="mobile-nav__item" id="mobile-nav-tokens" aria-pressed="false" aria-controls="app-editor">
+      <span class="mobile-nav__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/></svg></span>
+      Tokens
+    </button>
+    <button type="button" class="mobile-nav__item" id="mobile-nav-search" aria-haspopup="dialog">
+      <span class="mobile-nav__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+      Search
+    </button>
+  </div>
+</nav>
 
 <!-- ═══════════════════════════════ OVERLAYS ═══════════════════════════════ -->
 
 <!-- Settings popover -->
-<div class="popover-backdrop" id="settings-backdrop" hidden aria-hidden="true"></div>
-<div class="popover" id="settings-popover" role="dialog" aria-modal="true" aria-label="Settings" hidden>
+<div class="popover-backdrop" id="settings-backdrop" hidden></div>
+<div class="popover" id="settings-popover" role="dialog" aria-labelledby="settings-title" hidden>
   <div class="popover__header">
-    <h3 class="popover__title">Settings</h3>
-    <button class="app-btn app-btn--ghost app-btn--icon" id="settings-close" aria-label="Close settings">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    <h2 class="popover__title" id="settings-title">Settings</h2>
+    <button class="app-btn app-btn--ghost app-btn--icon" id="settings-close" type="button" aria-label="Close settings">
+      <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
     </button>
   </div>
   <div class="popover__body">
     <div class="settings__group">
-      <label class="settings__label" for="setting-base-font">Base Font Size (px)</label>
-      <input type="number" class="settings__input" id="setting-base-font" min="10" max="24" step="1" value="16" />
-      <p class="settings__hint">Controls rem to px conversion across the system.</p>
+      <label class="settings__label" for="setting-base-font">Base font size (px)</label>
+      <input type="number" class="settings__input" id="setting-base-font" min="10" max="24" step="1" value="16" aria-describedby="setting-base-font-hint" />
+      <p class="settings__hint" id="setting-base-font-hint">Controls rem to px conversion across the system.</p>
     </div>
-    <div class="settings__group">
-      <span class="settings__label">Input Unit</span>
-      <div class="settings__segmented" role="radiogroup" aria-label="Input unit">
+    <fieldset class="settings__group">
+      <legend class="settings__label">Input unit</legend>
+      <div class="settings__segmented">
         <label class="settings__seg-btn"><input type="radio" name="input-unit" value="rem" checked /><span>rem</span></label>
         <label class="settings__seg-btn"><input type="radio" name="input-unit" value="px" /><span>px</span></label>
       </div>
       <p class="settings__hint">Token inputs will display in the selected unit.</p>
-    </div>
-    <div class="settings__group">
-      <span class="settings__label">Fluid Clamp Viewport</span>
+    </fieldset>
+    <fieldset class="settings__group">
+      <legend class="settings__label">Fluid clamp viewport</legend>
       <div class="settings__row">
         <div class="settings__field">
-          <label class="setting-sublabel" for="setting-min-vp">Min (px)</label>
+          <label class="settings__sublabel" for="setting-min-vp">Min (px)</label>
           <input type="number" class="settings__input" id="setting-min-vp" min="200" max="800" step="10" value="320" />
         </div>
         <div class="settings__field">
-          <label class="setting-sublabel" for="setting-max-vp">Max (px)</label>
+          <label class="settings__sublabel" for="setting-max-vp">Max (px)</label>
           <input type="number" class="settings__input" id="setting-max-vp" min="800" max="2560" step="10" value="1280" />
         </div>
       </div>
-    </div>
-    <div class="settings__group">
-      <span class="settings__label">CSS Output</span>
+    </fieldset>
+    <fieldset class="settings__group">
+      <legend class="settings__label">CSS output</legend>
       <label class="settings__checkbox"><input type="checkbox" id="setting-hide-comments" /> Hide comments</label>
       <label class="settings__checkbox"><input type="checkbox" id="setting-hide-framework" /> Hide framework classes</label>
-    </div>
+    </fieldset>
   </div>
 </div>
 
 <!-- Command palette -->
 <div class="cmd-overlay" id="cmd-overlay" hidden>
-  <div class="cmd-palette" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="cmd-palette" role="dialog" aria-modal="true" aria-label="Search sections and tokens">
     <div class="cmd-palette__search">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" class="cmd-palette__input" id="cmd-input" placeholder="Search sections and tokens&#8230;" autocomplete="off" spellcheck="false" aria-autocomplete="list" aria-controls="cmd-results" />
-      <kbd>Esc</kbd>
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" class="cmd-palette__input" id="cmd-input" placeholder="Search sections and tokens…" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="true" aria-controls="cmd-results" aria-label="Search sections and tokens" />
+      <kbd aria-hidden="true">Esc</kbd>
     </div>
     <ul class="cmd-palette__results" id="cmd-results" role="listbox" aria-label="Results"></ul>
   </div>
@@ -354,18 +514,17 @@
 
 <!-- Confirm modal -->
 <div class="modal-overlay" id="confirm-modal" hidden>
-  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+  <div class="modal" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-message">
     <div class="modal__header">
-      <h3 class="modal__title" id="confirm-title">Confirm Delete</h3>
+      <h2 class="modal__title" id="confirm-title">Confirm delete</h2>
     </div>
     <div class="modal__body">
-      <p id="confirm-message">Are you sure you want to delete this token?</p>
+      <div id="confirm-message"><p>Are you sure you want to delete this token?</p></div>
     </div>
     <div class="modal__footer">
-      <button class="app-btn app-btn--ghost" id="confirm-cancel">Cancel</button>
-      <button class="app-btn app-btn--danger" id="confirm-ok">Delete</button>
+      <button class="app-btn app-btn--outline" id="confirm-cancel" type="button">Cancel</button>
+      <button class="app-btn app-btn--danger" id="confirm-ok" type="button">Delete</button>
     </div>
-
   </div>
 </div>
 
@@ -373,60 +532,36 @@
 <div class="toast-container" id="toast-container" role="status" aria-live="polite" aria-atomic="false"></div>
 
 <!-- Hidden file input for import -->
-<input type="file" id="import-file-input" accept=".json" aria-hidden="true" tabindex="-1" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px" />
+<input type="file" id="import-file-input" accept=".json,application/json" aria-hidden="true" tabindex="-1" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px" />
 
-<!-- About modal -->
+<!-- About dialog -->
 <dialog id="about-modal" class="about-modal" aria-labelledby="about-modal-title">
   <div class="about-modal__inner">
-    <button type="button" class="about-modal__close" data-about-close aria-label="Close">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="6" y1="6" x2="18" y2="18"/><line x1="6" y1="18" x2="18" y2="6"/></svg>
-    </button>
-
-    <header class="about-modal__header">
+    <div class="about-modal__header">
       <span class="about-modal__logo" aria-hidden="true">
-        <svg width="22" height="22" viewBox="0 0 20 20" fill="none">
-          <rect x="2" y="2" width="7" height="7" rx="1.5" fill="var(--app-accent)"/>
-          <rect x="11" y="2" width="7" height="7" rx="1.5" fill="var(--app-accent)" opacity="0.5"/>
-          <rect x="2" y="11" width="7" height="7" rx="1.5" fill="var(--app-accent)" opacity="0.5"/>
-          <rect x="11" y="11" width="7" height="7" rx="1.5" fill="var(--app-accent)" opacity="0.3"/>
-        </svg>
+        <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3 3h4v4H3z"/><path d="M9 3h4v4H9z" opacity=".55"/><path d="M3 9h4v4H3z" opacity=".55"/><path d="M9 9h4v4H9z" opacity=".3"/></svg>
       </span>
       <div class="about-modal__heading">
-        <h2 id="about-modal-title" class="about-modal__title">Design System Builder <span class="about-modal__version">v4.3</span></h2>
+        <h2 id="about-modal-title" class="about-modal__title">About Design System Builder <span class="version-pill">v4.4</span></h2>
         <p class="about-modal__tagline">Token-driven UI engine · live preview · production CSS</p>
       </div>
-    </header>
+      <button type="button" class="about-modal__close" data-about-close aria-label="Close about dialog">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
 
     <div class="about-modal__body">
-      <p class="about-modal__intro">A playground for designers and front-end engineers. Define tokens, preview a full component library instantly, and copy production-ready CSS. Everything runs locally — no backend, no tracking.</p>
-
-      <p class="about-modal__note">Generated CSS is provided as-is. Component styling is a reference implementation, not a drop-in production framework.</p>
-
+      <p>Design System Builder is an open-source playground for designers and front-end engineers. Define primitive and semantic tokens, preview a full component library instantly, and copy production-ready CSS.</p>
+      <p class="about-modal__muted">Everything runs locally in your browser — no backend, no tracking. Generated CSS is provided as-is: component styling is a reference implementation, not a drop-in production framework.</p>
       <ul class="about-modal__links">
-        <li><a href="https://github.com/farhanshares/design-system" target="_blank" rel="noopener noreferrer">GitHub repository <span aria-hidden="true">↗</span></a></li>
-        <li><a href="https://farhan.app" target="_blank" rel="noopener noreferrer">Built by Farhan <span aria-hidden="true">↗</span></a></li>
-        <li><a href="https://buymeacoffee.com/farhan" target="_blank" rel="noopener noreferrer">Buy me a coffee ☕ <span aria-hidden="true">↗</span></a></li>
+        <li><a href="https://github.com/farhanshares/design-system" target="_blank" rel="noopener noreferrer">View on GitHub</a></li>
+        <li>Built by <a href="https://farhan.app" target="_blank" rel="noopener noreferrer">Farhan</a></li>
+        <li>If you find this useful, consider <a href="https://buymeacoffee.com/farhan" target="_blank" rel="noopener noreferrer">buying me a coffee</a> ☕</li>
       </ul>
     </div>
   </div>
 </dialog>
 
-<script>
-  (() => {
-    const dlg = document.getElementById('about-modal');
-    if (!dlg) return;
-    document.querySelectorAll('[data-about-open]').forEach(el => {
-      el.addEventListener('click', () => { if (!dlg.open) dlg.showModal(); });
-    });
-    dlg.querySelectorAll('[data-about-close]').forEach(el => {
-      el.addEventListener('click', () => dlg.close());
-    });
-    dlg.addEventListener('click', (e) => {
-      if (e.target === dlg) dlg.close();
-    });
-  })();
-</script>
-
-<script src="app.js"></script>
+<script src="app.js" defer></script>
 </body>
 </html>

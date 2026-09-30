@@ -14,8 +14,11 @@ A Geist-inspired live design system engine where tokens drive everything. Define
 - Full component library rendered from semantic tokens — buttons, inputs, badges, alerts, cards, modals, tabs, tooltips, avatars, and more
 - Real-time CSS output with Tokens and Framework tabs, copy to clipboard, and download
 - Fluid type and spacing tokens using `clamp()`
-- Undo / redo, import / export token sets as JSON, command palette
+- Undo / redo, import / export token sets as JSON, command palette (`Ctrl/⌘ K`)
 - Dual-level theming — app UI theme and token-level light/dark values
+- App shell benchmarked against [App Blueprint](https://app-blueprint.farhan.app): collapsible navigation rail, inspector-style editor, slim footer, off-canvas drawers and bottom navigation on mobile
+- Accessible by design — semantic landmarks, keyboard-operable panels and dialogs, visible focus, WCAG AA text contrast
+- On-page SEO — canonical URLs, Open Graph / Twitter cards, JSON-LD, sitemap and robots
 
 ## Running locally
 

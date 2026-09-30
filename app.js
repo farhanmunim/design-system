@@ -211,7 +211,7 @@ function buildDefaultTokens() {
     // Status raw values (used by semantic tokens)
     tok('success',    '#1a9e4a', '#3dc26e', 'Success green'),
     tok('warning',    '#f5a623', '#f5a623', 'Warning amber'),
-    tok('error',      '#e5484d', '#e5484d', 'Error red'),
+    tok('error',      '#dc2626', '#dc2626', 'Error red'),
     tok('info',       '#0070f3', '#3291ff', 'Info blue'),
     tok('success-bg', '#e3f9e5', '#0d2b12', 'Success background'),
     tok('warning-bg', '#fff8eb', '#3b1e00', 'Warning background'),
@@ -236,7 +236,7 @@ function buildDefaultTokens() {
     tok('accent-bg',      'var(--brand-50)',    '#06193a', 'Tinted accent bg',       { locked: true }),
     tok('status-success', 'var(--success)',     '#3dc26e', 'Success',                { locked: true }),
     tok('status-warning', 'var(--warning)',     '#f5a623', 'Warning',                { locked: true }),
-    tok('status-error',   'var(--error)',       '#e5484d', 'Error',                  { locked: true }),
+    tok('status-error',   'var(--error)',       '#dc2626', 'Error',                  { locked: true }),
     tok('status-info',    'var(--info)',        '#3291ff', 'Info',                   { locked: true }),
     tok('status-success-bg', 'var(--success-bg)', '#0d2b12', 'Success bg',           { locked: true }),
     tok('status-warning-bg', 'var(--warning-bg)', '#3b1e00', 'Warning bg',           { locked: true }),
@@ -539,7 +539,7 @@ const TokenStore = (() => {
         maxViewport: 900,
         cssHideComments: false,
         cssHideFramework: false,
-        appTheme: 'dark',
+        appTheme: (typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches) ? 'dark' : 'light',
       },
       tokens: buildDefaultTokens(),
     };
@@ -576,6 +576,10 @@ const TokenStore = (() => {
           state = parsed;
         } else {
           state = getDefaultState();
+          // The changelog page may have saved only a theme preference
+          if (parsed.settings && (parsed.settings.appTheme === 'dark' || parsed.settings.appTheme === 'light')) {
+            state.settings.appTheme = parsed.settings.appTheme;
+          }
         }
       } catch {
         state = getDefaultState();
@@ -1202,9 +1206,11 @@ const ThemeEngine = (() => {
     const moon = document.querySelector('.icon-moon');
     const sun  = document.querySelector('.icon-sun');
     if (moon && sun) {
-      moon.style.display = isDark ? 'block' : 'none';
-      sun.style.display  = isDark ? 'none' : 'block';
+      moon.style.display = isDark ? 'none' : '';
+      sun.style.display  = isDark ? '' : 'none';
     }
+    const themeBtn = document.getElementById('btn-theme');
+    if (themeBtn) themeBtn.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
 
     // Update preview theme attribute for dark override CSS
     const previewEl = document.getElementById('preview-inner');
@@ -1283,7 +1289,7 @@ const PreviewEngine = (() => {
         </div>
 
         <div class="gs-controls">
-          <p class="gs-controls__heading">Top bar controls</p>
+          <h2 class="gs-controls__heading">Top bar controls</h2>
           <div class="gs-controls__grid">
             <div class="gs-control-item">
               <span class="gs-control-item__icon" aria-hidden="true">
@@ -1308,8 +1314,8 @@ const PreviewEngine = (() => {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
               </span>
               <div>
-                <p class="gs-control-item__label">Toggle nav</p>
-                <p class="gs-control-item__desc">Show or hide the left navigation panel to gain more preview space.</p>
+                <p class="gs-control-item__label">Collapse navigation</p>
+                <p class="gs-control-item__desc">Collapse the left navigation to an icon rail to gain more preview space. On mobile it opens as a drawer.</p>
               </div>
             </div>
             <div class="gs-control-item">
@@ -1317,8 +1323,8 @@ const PreviewEngine = (() => {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
               </span>
               <div>
-                <p class="gs-control-item__label">Toggle token editor</p>
-                <p class="gs-control-item__desc">Show or hide the right token editor panel. Both panels can be hidden for a full-width style guide view.</p>
+                <p class="gs-control-item__label">Hide token editor</p>
+                <p class="gs-control-item__desc">Hide the right token editor panel; a slim tab on the canvas edge brings it back. Collapse both panels for a full-width style guide view.</p>
               </div>
             </div>
             <div class="gs-control-item">
@@ -1354,7 +1360,7 @@ const PreviewEngine = (() => {
               </span>
               <div>
                 <p class="gs-control-item__label">Theme toggle</p>
-                <p class="gs-control-item__desc">Switch the preview between light and dark mode. Tokens with a dark value swap automatically.</p>
+                <p class="gs-control-item__desc">Switch the app and preview between light and dark mode. Tokens with a dark value swap automatically.</p>
               </div>
             </div>
             <div class="gs-control-item">
@@ -1363,7 +1369,7 @@ const PreviewEngine = (() => {
               </span>
               <div>
                 <p class="gs-control-item__label">Command palette</p>
-                <p class="gs-control-item__desc">Quickly search and jump to any section or token.</p>
+                <p class="gs-control-item__desc">Quickly search and jump to any section or token. Press <kbd>Ctrl</kbd>+<kbd>K</kbd> (or <kbd>⌘K</kbd>).</p>
               </div>
             </div>
           </div>
@@ -1372,7 +1378,7 @@ const PreviewEngine = (() => {
         <div class="shortcut-table">
           <table>
             <thead>
-              <tr><th>Shortcut</th><th>Action</th></tr>
+              <tr><th scope="col">Shortcut</th><th scope="col">Action</th></tr>
             </thead>
             <tbody>
               <tr><td><kbd>Ctrl+Z</kbd></td><td>Undo</td></tr>
@@ -1506,7 +1512,7 @@ const PreviewEngine = (() => {
   function renderHeadings(body) {
     body.innerHTML = `
       <div class="preview-headings">
-        <h1>The Craft of Great Typography</h1>
+        <p class="h1" role="heading" aria-level="2">The Craft of Great Typography</p>
         <span class="heading-meta">h1 · text-5xl · leading-tight</span>
         <h2>Design Systems at Scale</h2>
         <span class="heading-meta">h2 · text-4xl · font-bold</span>
@@ -1594,7 +1600,7 @@ const PreviewEngine = (() => {
         </p>
       </div>
       <br/>
-      <pre class="code-block"><code><span class="code-comment">/* Applying token-driven styles */</span>
+      <pre class="code-block" tabindex="0"><code><span class="code-comment">/* Applying token-driven styles */</span>
 <span class="code-prop">.hero-title</span> {
   <span class="code-keyword">font-size</span>: <span class="code-string">var(--fluid-4xl)</span>;
   <span class="code-keyword">color</span>: <span class="code-string">var(--fg-base)</span>;
@@ -1755,32 +1761,32 @@ const PreviewEngine = (() => {
         <div>
           <p class="preview-btn-row-label">Variants</p>
           <div class="preview-btn-group">
-            <button class="btn btn--primary">Primary</button>
-            <button class="btn btn--secondary">Secondary</button>
-            <button class="btn btn--ghost">Ghost</button>
-            <button class="btn btn--danger">Danger</button>
+            <button type="button" class="btn btn--primary">Primary</button>
+            <button type="button" class="btn btn--secondary">Secondary</button>
+            <button type="button" class="btn btn--ghost">Ghost</button>
+            <button type="button" class="btn btn--danger">Danger</button>
           </div>
         </div>
         <div>
           <p class="preview-btn-row-label">Sizes</p>
           <div class="preview-btn-group">
-            <button class="btn btn--primary btn--sm">Small</button>
-            <button class="btn btn--primary">Base</button>
-            <button class="btn btn--primary btn--lg">Large</button>
+            <button type="button" class="btn btn--primary btn--sm">Small</button>
+            <button type="button" class="btn btn--primary">Base</button>
+            <button type="button" class="btn btn--primary btn--lg">Large</button>
           </div>
         </div>
         <div>
           <p class="preview-btn-row-label">With icon</p>
           <div class="preview-btn-group">
-            <button class="btn btn--primary">
+            <button type="button" class="btn btn--primary">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
               Download
             </button>
-            <button class="btn btn--secondary">
+            <button type="button" class="btn btn--secondary">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               Upload
             </button>
-            <button class="btn btn--ghost">
+            <button type="button" class="btn btn--ghost">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               Search
             </button>
@@ -1789,9 +1795,9 @@ const PreviewEngine = (() => {
         <div>
           <p class="preview-btn-row-label">Disabled</p>
           <div class="preview-btn-group">
-            <button class="btn btn--primary" disabled>Primary</button>
-            <button class="btn btn--secondary" disabled>Secondary</button>
-            <button class="btn btn--danger" disabled>Danger</button>
+            <button type="button" class="btn btn--primary" disabled>Primary</button>
+            <button type="button" class="btn btn--secondary" disabled>Secondary</button>
+            <button type="button" class="btn btn--danger" disabled>Danger</button>
           </div>
         </div>
       </div>
@@ -1930,9 +1936,9 @@ const PreviewEngine = (() => {
         <div>
           <p class="preview-btn-row-label">Tag (removable)</p>
           <div style="display:flex;flex-wrap:wrap;gap:var(--s-2);align-items:center">
-            <span class="tag">Design Systems <button class="tag__remove" aria-label="Remove tag">×</button></span>
-            <span class="tag">CSS Custom Props <button class="tag__remove" aria-label="Remove tag">×</button></span>
-            <span class="tag">Token-driven <button class="tag__remove" aria-label="Remove tag">×</button></span>
+            <span class="tag">Design Systems <button type="button" class="tag__remove" aria-label="Remove tag">×</button></span>
+            <span class="tag">CSS Custom Props <button type="button" class="tag__remove" aria-label="Remove tag">×</button></span>
+            <span class="tag">Token-driven <button type="button" class="tag__remove" aria-label="Remove tag">×</button></span>
           </div>
         </div>
       </div>
@@ -2002,7 +2008,7 @@ const PreviewEngine = (() => {
         <div class="modal-preview__inner">
           <div class="modal-preview__header">
             <h3 class="modal-preview__title">Confirm Action</h3>
-            <button class="app-btn app-btn--ghost app-btn--icon" aria-label="Close modal" style="width:28px;height:28px">
+            <button type="button" class="app-btn app-btn--ghost app-btn--icon" aria-label="Close modal" style="width:28px;height:28px">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
             </button>
           </div>
@@ -2011,8 +2017,8 @@ const PreviewEngine = (() => {
             <p>Consider exporting your current token set before making destructive changes.</p>
           </div>
           <div class="modal-preview__footer">
-            <button class="btn btn--ghost btn--sm">Cancel</button>
-            <button class="btn btn--danger btn--sm">Delete token</button>
+            <button type="button" class="btn btn--ghost btn--sm">Cancel</button>
+            <button type="button" class="btn btn--danger btn--sm">Delete token</button>
           </div>
         </div>
       </div>
@@ -2029,8 +2035,8 @@ const PreviewEngine = (() => {
           <span class="divider-labeled__text">Or continue with</span>
         </div>
         <div style="display:flex;gap:var(--s-2);margin-top:var(--s-4)">
-          <button class="btn btn--secondary" style="flex:1">GitHub</button>
-          <button class="btn btn--secondary" style="flex:1">Google</button>
+          <button type="button" class="btn btn--secondary" style="flex:1">GitHub</button>
+          <button type="button" class="btn btn--secondary" style="flex:1">Google</button>
         </div>
       </div>
     `;
@@ -2048,11 +2054,11 @@ const PreviewEngine = (() => {
       return `<span class="badge ${map[s] || 'badge--default'}">${s}</span>`;
     };
     body.innerHTML = `
-      <div class="table-wrap">
+      <div class="table-wrap" tabindex="0" role="region" aria-label="Example data table">
         <table class="data-table">
           <thead>
             <tr>
-              <th>Name</th><th>Role</th><th>Status</th><th>Joined</th>
+              <th scope="col">Name</th><th scope="col">Role</th><th scope="col">Status</th><th scope="col">Joined</th>
             </tr>
           </thead>
           <tbody>
@@ -2076,7 +2082,7 @@ const PreviewEngine = (() => {
       <div>
         <div class="tabs-bar" role="tablist">
           ${tabs.map((t, i) => `
-            <button class="tab${i === 0 ? ' tab--active' : ''}${i === 3 ? ' tab-disabled' : ''}"
+            <button type="button" class="tab${i === 0 ? ' tab--active' : ''}${i === 3 ? ' tab-disabled' : ''}"
                     role="tab" aria-selected="${i === 0}" ${i === 3 ? 'disabled' : ''}>${t}</button>
           `).join('')}
         </div>
@@ -2107,17 +2113,17 @@ const PreviewEngine = (() => {
         <div>
           <p style="font-size:var(--fs-xs);color:var(--fg-muted);margin-bottom:var(--s-2)">Hover to see</p>
           <div class="tooltip-wrap">
-            <button class="btn btn--secondary">Hover me
-              <div class="tooltip-content" role="tooltip">This is a tooltip with helpful info</div>
+            <button type="button" class="btn btn--secondary">Hover me
+              <span class="tooltip-content" role="tooltip">This is a tooltip with helpful info</span>
             </button>
           </div>
         </div>
         <div>
           <div class="tooltip-wrap">
-            <button class="btn btn--primary">
+            <button type="button" class="btn btn--primary">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               More info
-              <div class="tooltip-content" role="tooltip">Additional context lives here</div>
+              <span class="tooltip-content" role="tooltip">Additional context lives here</span>
             </button>
           </div>
         </div>
@@ -2295,7 +2301,7 @@ const UI = (() => {
   }
 
   function markInputError(input, message) {
-    input.style.borderColor = 'var(--status-error, #e5484d)';
+    input.style.borderColor = 'var(--app-danger)';
     input.title = message;
     input.focus();
     input.select();
@@ -2498,7 +2504,7 @@ const UI = (() => {
             value="${convertDisplay(token.value) || ''}"
             placeholder="${unitLabel === 'px' ? '16px' : '1rem'}" />
           ${showDarkToggle ? `
-            <button class="token-row__dark-toggle${token.darkValue ? ' is-active' : ''}" data-action="toggle-dark"
+            <button type="button" class="token-row__dark-toggle${token.darkValue ? ' is-active' : ''}" data-action="toggle-dark"
               title="${token.darkValue ? 'Remove dark value' : 'Add dark value'}"
               aria-label="${token.darkValue ? 'Remove dark value' : 'Add dark value'}"
               aria-pressed="${!!token.darkValue}">${moonSVG}</button>
@@ -2519,10 +2525,9 @@ const UI = (() => {
       `;
     }
 
-    const el = document.createElement('div');
+    const el = document.createElement('li');
     el.className = `token-row${isDiff ? ' is-modified' : ''}`;
     el.setAttribute('data-token-id', token.id);
-    el.setAttribute('role', 'listitem');
     el.innerHTML = `
       <div class="token-row__body">
         <div class="token-row__name-wrap">
@@ -2534,19 +2539,19 @@ const UI = (() => {
         ${valueContent}
         ${token.description ? `<span class="token-row__desc">${token.description}</span>` : ''}
       </div>
-      <div class="token-row__actions" aria-label="Token actions">
+      <div class="token-row__actions" role="group" aria-label="Token actions">
         ${token.locked ? `
-          <span class="token-row__lock-icon" title="Semantic token — cannot be deleted" aria-label="Locked">
+          <span class="token-row__lock-icon" role="img" title="Semantic token — cannot be deleted" aria-label="Locked">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
           </span>
         ` : ''}
         ${isDiff ? `
-          <button class="token-row__action-btn" data-action="reset" title="Reset to default" aria-label="Reset to default">
+          <button type="button" class="token-row__action-btn" data-action="reset" title="Reset to default" aria-label="Reset to default">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
           </button>
         ` : ''}
         ${!token.locked ? `
-          <button class="token-row__action-btn token-row__action-btn--danger" data-action="delete" title="Delete token" aria-label="Delete --${token.name}">
+          <button type="button" class="token-row__action-btn token-row__action-btn--danger" data-action="delete" title="Delete token" aria-label="Delete --${token.name}">
             <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
           </button>
         ` : ''}
@@ -2707,9 +2712,7 @@ const UI = (() => {
     const cat = getCategoryForSection(activeSection);
 
     if (!cat) {
-      container.innerHTML = `<div style="padding:20px 12px;text-align:center;color:var(--app-text-subtle);font-size:12px">
-        No editable tokens for this section.<br/>Navigate to a token section in the left panel.
-      </div>`;
+      container.innerHTML = `<p class="app-editor__empty">No editable tokens for this section.<br/>Navigate to a token section in the left panel.</p>`;
       return;
     }
 
@@ -2751,14 +2754,17 @@ const UI = (() => {
     container.appendChild(header);
 
     if (!tokens.length) {
-      const empty = document.createElement('div');
-      empty.style.cssText = 'padding:16px 12px;text-align:center;color:var(--app-text-subtle);font-size:12px';
+      const empty = document.createElement('p');
+      empty.className = 'app-editor__empty';
       empty.textContent = searchQuery ? 'No tokens match your search.' : 'No tokens in this category.';
       container.appendChild(empty);
     } else {
+      const list = document.createElement('ul');
+      list.className = 'token-list__items';
       tokens.forEach(t => {
-        container.appendChild(renderTokenRow(t));
+        list.appendChild(renderTokenRow(t));
       });
+      container.appendChild(list);
     }
 
     // Add custom token form (only if no search active)
@@ -2776,8 +2782,10 @@ const UI = (() => {
 
       const form = document.createElement('div');
       form.className = 'add-token-form';
+      form.setAttribute('role', 'group');
+      form.setAttribute('aria-labelledby', 'add-token-form-title');
       form.innerHTML = `
-        <span class="add-token-form__title">New token</span>
+        <span class="add-token-form__title" id="add-token-form-title">New token</span>
         ${prefixHint ? `<p style="font-size:10px;color:var(--app-text-subtle);margin:0;line-height:1.5">Prefix: ${prefixesDisplay}</p>` : ''}
         ${sectionHint ? `<p style="font-size:10px;color:var(--app-text-subtle);margin:0;line-height:1.5">${sectionHint.tip}</p>` : ''}
         <div class="add-token-form__fields">
@@ -2787,7 +2795,7 @@ const UI = (() => {
           </div>
           <input type="text" id="new-token-value" class="no-prefix" placeholder="value" aria-label="New token value" style="flex:0 0 80px" />
         </div>
-        <button id="btn-add-token-submit" class="app-btn app-btn--primary" style="width:100%;justify-content:center;height:28px;font-size:12px">
+        <button id="btn-add-token-submit" type="button" class="app-btn app-btn--primary" style="width:100%">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Add Token
         </button>
@@ -2839,7 +2847,8 @@ const UI = (() => {
     document.querySelectorAll('.nav-item').forEach(el => {
       const sec = el.getAttribute('data-section');
       el.classList.toggle('is-active', sec === sectionId);
-      el.setAttribute('aria-current', sec === sectionId ? 'page' : 'false');
+      if (sec === sectionId) el.setAttribute('aria-current', 'location');
+      else el.removeAttribute('aria-current');
     });
 
     // Update editor title
@@ -2858,10 +2867,17 @@ const UI = (() => {
   }
 
   /* ── Intersection Observer ── */
+  let spyLockUntil = 0;
+  function lockScrollSpy(ms = 1200) { spyLockUntil = Date.now() + ms; }
+
   function initScrollSpy() {
     const sections = document.querySelectorAll('.preview-section');
+    const preview = document.getElementById('preview-main');
+    // Any smooth scroll we start ends with a scrollend; release the lock early when it fires
+    preview?.addEventListener('scrollend', () => { spyLockUntil = 0; });
     const observer = new IntersectionObserver(
       entries => {
+        if (Date.now() < spyLockUntil) return;
         entries.forEach(entry => {
           if (entry.isIntersecting && entry.intersectionRatio >= 0.2) {
             const sec = entry.target.getAttribute('data-section');
@@ -2890,8 +2906,13 @@ const UI = (() => {
     const isCollapsed = newState === 'collapsed';
     const isMaximized = newState === 'maximized';
 
-    if (toggle) toggle.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
-    if (body) body.setAttribute('aria-hidden', isCollapsed ? 'true' : 'false');
+    if (toggle) {
+      toggle.setAttribute('aria-expanded', isCollapsed ? 'false' : 'true');
+      toggle.setAttribute('aria-label', isCollapsed ? 'Expand CSS panel' : 'Collapse CSS panel');
+    }
+    if (body) body.hidden = isCollapsed;
+    const maxBtn = document.getElementById('css-maximize');
+    if (maxBtn) maxBtn.setAttribute('aria-label', isMaximized ? 'Restore CSS panel' : 'Maximize CSS panel');
     if (expandIcon) expandIcon.style.display = isMaximized ? 'none' : '';
     if (restoreIcon) restoreIcon.style.display = isMaximized ? '' : 'none';
   }
@@ -2939,28 +2960,47 @@ const UI = (() => {
     const savedTab = localStorage.getItem('dsb-css-tab');
     if (savedTab) cssPanelTab = savedTab;
 
-    document.querySelectorAll('.css-tabs__tab').forEach(tab => {
-      const tabId = tab.getAttribute('data-tab');
-      tab.classList.toggle('css-tabs__tab--active', tabId === cssPanelTab);
-      tab.setAttribute('aria-selected', tabId === cssPanelTab ? 'true' : 'false');
-      tab.addEventListener('click', () => {
-        cssPanelTab = tabId;
-        localStorage.setItem('dsb-css-tab', cssPanelTab);
-        document.querySelectorAll('.css-tabs__tab').forEach(t => {
-          t.classList.toggle('css-tabs__tab--active', t === tab);
-          t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
-        });
-        updateCSSOutput();
+    const tabs = Array.from(document.querySelectorAll('.css-tabs__tab'));
+    const tabPanel = document.getElementById('css-panel-body');
+    function activateTab(tab, focus = false) {
+      cssPanelTab = tab.getAttribute('data-tab');
+      try { localStorage.setItem('dsb-css-tab', cssPanelTab); } catch (_) {}
+      tabs.forEach(t => {
+        const on = t === tab;
+        t.classList.toggle('css-tabs__tab--active', on);
+        t.setAttribute('aria-selected', on ? 'true' : 'false');
+        t.tabIndex = on ? 0 : -1;
+      });
+      tabPanel?.setAttribute('aria-labelledby', tab.id);
+      if (focus) tab.focus();
+      updateCSSOutput();
+    }
+    tabs.forEach((tab, i) => {
+      const on = tab.getAttribute('data-tab') === cssPanelTab;
+      tab.classList.toggle('css-tabs__tab--active', on);
+      tab.setAttribute('aria-selected', on ? 'true' : 'false');
+      tab.tabIndex = on ? 0 : -1;
+      if (on) tabPanel?.setAttribute('aria-labelledby', tab.id);
+      tab.addEventListener('click', () => activateTab(tab));
+      tab.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+          e.preventDefault();
+          const next = tabs[(i + (e.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length];
+          activateTab(next, true);
+        } else if (e.key === 'Home') { e.preventDefault(); activateTab(tabs[0], true); }
+        else if (e.key === 'End') { e.preventDefault(); activateTab(tabs[tabs.length - 1], true); }
       });
     });
   }
 
   /* ── Settings ── */
+  let closeSettingsPopover = () => {};
   function initSettings() {
     const btn = document.getElementById('btn-settings');
     const popover = document.getElementById('settings-popover');
     const backdrop = document.getElementById('settings-backdrop');
     const closeBtn = document.getElementById('settings-close');
+    closeSettingsPopover = () => { if (!popover.hidden) closeSettings(); };
 
     function openSettings() {
       const settings = TokenStore.getSettings();
@@ -2973,12 +3013,27 @@ const UI = (() => {
 
       popover.hidden = false;
       backdrop.hidden = false;
+      btn?.setAttribute('aria-expanded', 'true');
+      document.getElementById('setting-base-font')?.focus({ preventScroll: true });
     }
 
     function closeSettings() {
+      const hadFocus = popover.contains(document.activeElement);
       popover.hidden = true;
       backdrop.hidden = true;
+      btn?.setAttribute('aria-expanded', 'false');
+      if (hadFocus) btn?.focus({ preventScroll: true });
     }
+
+    // Keep focus inside the popover while it is open (it behaves as a modal dialog)
+    popover?.addEventListener('keydown', e => {
+      if (e.key !== 'Tab') return;
+      const focusables = Array.from(popover.querySelectorAll('button, input, [tabindex]:not([tabindex="-1"])')).filter(f => !f.disabled && f.offsetParent !== null);
+      if (!focusables.length) return;
+      const first = focusables[0], last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    });
 
     btn?.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -3019,6 +3074,7 @@ const UI = (() => {
   }
 
   /* ── Command Palette ── */
+  let closeCommandPalette = () => {};
   function initCommandPalette() {
     const overlay = document.getElementById('cmd-overlay');
     const input   = document.getElementById('cmd-input');
@@ -3079,8 +3135,9 @@ const UI = (() => {
     function renderResults(q) {
       const items = getItems(q);
       focusedIdx = -1;
+      input.removeAttribute('aria-activedescendant');
       results.innerHTML = items.map((item, i) => `
-        <li class="cmd-result" role="option" data-idx="${i}" data-type="${item.type}" data-id="${item.id || ''}" data-section="${item.id || ''}">
+        <li class="cmd-result" role="option" id="cmd-opt-${i}" aria-selected="false" data-idx="${i}" data-type="${item.type}" data-id="${item.id || ''}" data-section="${item.id || ''}">
           <span class="cmd-result__type">${item.type}</span>
           <span class="cmd-result__name">${item.name}</span>
           ${item.sub ? `<span class="cmd-result__sub">${item.sub.slice(0, 40)}</span>` : ''}
@@ -3089,12 +3146,21 @@ const UI = (() => {
 
       results.querySelectorAll('.cmd-result').forEach(el => {
         el.addEventListener('click', () => selectResult(el));
-        el.addEventListener('mouseenter', () => {
-          results.querySelectorAll('.cmd-result').forEach(r => r.classList.remove('is-focused'));
-          el.classList.add('is-focused');
-          focusedIdx = parseInt(el.getAttribute('data-idx'));
-        });
+        el.addEventListener('mouseenter', () => setFocused(parseInt(el.getAttribute('data-idx'))));
       });
+    }
+
+    function setFocused(idx) {
+      const items = results.querySelectorAll('.cmd-result');
+      if (!items.length) return;
+      focusedIdx = Math.max(0, Math.min(idx, items.length - 1));
+      items.forEach((el, i) => {
+        const on = i === focusedIdx;
+        el.classList.toggle('is-focused', on);
+        el.setAttribute('aria-selected', on ? 'true' : 'false');
+      });
+      input.setAttribute('aria-activedescendant', items[focusedIdx].id);
+      items[focusedIdx].scrollIntoView({ block: 'nearest' });
     }
 
     function selectResult(el) {
@@ -3103,6 +3169,7 @@ const UI = (() => {
 
       if (type === 'section') {
         const sectionEl = document.getElementById(`section-${id}`);
+        lockScrollSpy();
         if (sectionEl) sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
         setActiveSection(id);
       } else if (type === 'token') {
@@ -3123,6 +3190,7 @@ const UI = (() => {
           const sec = sectionMap[token.category];
           if (sec) {
             const sectionEl = document.getElementById(`section-${sec}`);
+            lockScrollSpy();
             if (sectionEl) sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
             setActiveSection(sec);
             // Highlight after a tick
@@ -3142,7 +3210,10 @@ const UI = (() => {
       close();
     }
 
+    let paletteOpener = null;
     function open() {
+      if (!overlay.hidden) return;
+      paletteOpener = document.activeElement;
       overlay.hidden = false;
       input.value = '';
       renderResults('');
@@ -3150,8 +3221,17 @@ const UI = (() => {
     }
 
     function close() {
+      if (overlay.hidden) return;
       overlay.hidden = true;
+      const opener = paletteOpener;
+      paletteOpener = null;
+      // Restore focus after the current key event finishes so the key that closed the
+      // palette (Enter) cannot also activate the element that regains focus.
+      if (opener && typeof opener.focus === 'function') {
+        setTimeout(() => { if (document.contains(opener)) opener.focus({ preventScroll: true }); }, 0);
+      }
     }
+    closeCommandPalette = close;
 
     input?.addEventListener('input', () => renderResults(input.value));
 
@@ -3159,14 +3239,16 @@ const UI = (() => {
       const items = results.querySelectorAll('.cmd-result');
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        focusedIdx = Math.min(focusedIdx + 1, items.length - 1);
-        items.forEach((el, i) => el.classList.toggle('is-focused', i === focusedIdx));
-        items[focusedIdx]?.scrollIntoView({ block: 'nearest' });
+        setFocused(focusedIdx + 1);
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();
-        focusedIdx = Math.max(focusedIdx - 1, 0);
-        items.forEach((el, i) => el.classList.toggle('is-focused', i === focusedIdx));
-        items[focusedIdx]?.scrollIntoView({ block: 'nearest' });
+        setFocused(focusedIdx - 1);
+      } else if (e.key === 'Home' && items.length) {
+        e.preventDefault();
+        setFocused(0);
+      } else if (e.key === 'End' && items.length) {
+        e.preventDefault();
+        setFocused(items.length - 1);
       } else if (e.key === 'Enter') {
         const focused = results.querySelector('.is-focused');
         if (focused) selectResult(focused);
@@ -3224,54 +3306,231 @@ const UI = (() => {
     });
   }
 
-  /* ── Editor panel toggle ── */
-  function initPanelToggles() {
-    const layout  = document.querySelector('.app-layout');
-    const nav     = document.querySelector('.app-nav');
-    const editor  = document.querySelector('.app-editor');
-    const navBtn  = document.getElementById('btn-toggle-nav');
-    const edBtn   = document.getElementById('btn-toggle-editor');
-    if (!layout || !nav || !editor) return;
+  /* ── App shell: panels, drawers, mobile nav, nav filter, about dialog ── */
+  const Shell = (() => {
+    const MOBILE_BP = 640;
+    const RAIL_BP   = 1000;
+    const isMobile  = () => window.innerWidth <= MOBILE_BP;
 
-    let navHidden = false;
-    let edHidden  = false;
+    const el = {
+      nav:        document.getElementById('app-nav'),
+      editor:     document.getElementById('app-editor'),
+      overlay:    document.getElementById('app-overlay'),
+      navBtn:     document.getElementById('btn-toggle-nav'),
+      edBtn:      document.getElementById('btn-toggle-editor'),
+      navCollapse:document.getElementById('nav-collapse'),
+      edCollapse: document.getElementById('editor-collapse'),
+      edExpand:   document.getElementById('editor-expand'),
+      mobPreview: document.getElementById('mobile-nav-preview'),
+      mobSections:document.getElementById('mobile-nav-sections'),
+      mobTokens:  document.getElementById('mobile-nav-tokens'),
+      mobSearch:  document.getElementById('mobile-nav-search'),
+    };
 
-    function syncColumns() {
-      if (!navHidden && !edHidden) {
-        layout.style.gridTemplateColumns = 'var(--app-nav-w) 1fr var(--app-editor-w)';
-      } else if (navHidden && !edHidden) {
-        layout.style.gridTemplateColumns = '1fr var(--app-editor-w)';
-      } else if (!navHidden && edHidden) {
-        layout.style.gridTemplateColumns = 'var(--app-nav-w) 1fr';
-      } else {
-        layout.style.gridTemplateColumns = '1fr';
+    /* Desktop collapse state ─────────────────────────── */
+    function syncNav() {
+      const collapsed = el.nav.classList.contains('is-collapsed');
+      const label = collapsed ? 'Expand navigation' : 'Collapse navigation';
+      el.navCollapse?.setAttribute('aria-expanded', String(!collapsed));
+      el.navCollapse?.setAttribute('aria-label', label);
+      if (el.navBtn) {
+        el.navBtn.setAttribute('aria-pressed', String(collapsed));
+        el.navBtn.setAttribute('aria-label', label);
+        el.navBtn.setAttribute('data-tooltip', label);
       }
     }
 
-    navBtn?.addEventListener('click', () => {
-      navHidden = !navHidden;
-      nav.style.display = navHidden ? 'none' : '';
-      navBtn.setAttribute('aria-label', navHidden ? 'Show nav' : 'Hide nav');
-      navBtn.setAttribute('data-tooltip', navHidden ? 'Show nav' : 'Hide nav');
-      navBtn.setAttribute('data-tooltip-pos', 'below');
-      navBtn.setAttribute('aria-pressed', navHidden ? 'true' : 'false');
-      navBtn.querySelector('.icon-nav-hide').style.display = navHidden ? 'none' : '';
-      navBtn.querySelector('.icon-nav-show').style.display = navHidden ? '' : 'none';
-      syncColumns();
-    });
+    function syncEditor() {
+      const collapsed = el.editor.classList.contains('is-collapsed');
+      const label = collapsed ? 'Show token editor' : 'Hide token editor';
+      el.edCollapse?.setAttribute('aria-expanded', String(!collapsed));
+      if (el.edBtn) {
+        el.edBtn.setAttribute('aria-pressed', String(collapsed));
+        el.edBtn.setAttribute('aria-label', label);
+        el.edBtn.setAttribute('data-tooltip', label);
+      }
+      if (el.edExpand) el.edExpand.tabIndex = collapsed ? 0 : -1;
+      // Keep hidden content out of the tab order when collapsed on desktop
+      if (!isMobile()) el.editor.toggleAttribute('inert', collapsed);
+    }
 
-    edBtn?.addEventListener('click', () => {
-      edHidden = !edHidden;
-      editor.style.display = edHidden ? 'none' : '';
-      edBtn.setAttribute('aria-label', edHidden ? 'Show token editor' : 'Hide token editor');
-      edBtn.setAttribute('data-tooltip', edHidden ? 'Show token editor' : 'Hide token editor');
-      edBtn.setAttribute('data-tooltip-pos', 'below');
-      edBtn.setAttribute('aria-pressed', edHidden ? 'true' : 'false');
-      edBtn.querySelector('.icon-editor-hide').style.display = edHidden ? 'none' : '';
-      edBtn.querySelector('.icon-editor-show').style.display = edHidden ? '' : 'none';
-      syncColumns();
-    });
-  }
+    function persist(key, value) {
+      try { localStorage.setItem(key, value ? '1' : '0'); } catch (_) {}
+    }
+
+    function toggleNav(force) {
+      if (isMobile()) return Drawer.toggle(el.nav, el.mobSections);
+      el.nav.classList.toggle('is-collapsed', force);
+      syncNav();
+      persist('dsb-nav-collapsed', el.nav.classList.contains('is-collapsed'));
+    }
+
+    function toggleEditor(force) {
+      if (isMobile()) return Drawer.toggle(el.editor, el.mobTokens);
+      el.editor.classList.toggle('is-collapsed', force);
+      syncEditor();
+      persist('dsb-editor-collapsed', el.editor.classList.contains('is-collapsed'));
+      if (!el.editor.classList.contains('is-collapsed')) {
+        document.getElementById('token-search')?.focus({ preventScroll: true });
+      } else if (document.activeElement && el.editor.contains(document.activeElement)) {
+        el.edExpand?.focus();
+      }
+    }
+
+    /* Mobile drawers ─────────────────────────────────── */
+    const Drawer = {
+      lastFocus: null,
+
+      syncLock() {
+        const anyOpen = el.nav.classList.contains('is-mobile-open') || el.editor.classList.contains('is-mobile-open');
+        document.body.classList.toggle('drawer-open', anyOpen);
+        el.overlay?.classList.toggle('is-visible', anyOpen);
+        const navOpen = el.nav.classList.contains('is-mobile-open');
+        const edOpen  = el.editor.classList.contains('is-mobile-open');
+        el.mobSections?.setAttribute('aria-expanded', String(navOpen));
+        el.mobTokens?.setAttribute('aria-expanded', String(edOpen));
+        if (isMobile()) {
+          el.navCollapse?.setAttribute('aria-label', 'Close navigation');
+          el.navCollapse?.setAttribute('aria-expanded', String(navOpen));
+          el.edCollapse?.setAttribute('aria-label', 'Close token editor');
+          el.edCollapse?.setAttribute('aria-expanded', String(edOpen));
+        }
+        MobileNav.setActive(
+          el.nav.classList.contains('is-mobile-open') ? el.mobSections :
+          el.editor.classList.contains('is-mobile-open') ? el.mobTokens : el.mobPreview
+        );
+      },
+
+      closeAll(restoreFocus = true) {
+        const wasOpen = document.body.classList.contains('drawer-open');
+        el.nav.classList.remove('is-mobile-open');
+        el.editor.classList.remove('is-mobile-open');
+        el.nav.removeAttribute('aria-modal');
+        el.editor.removeAttribute('aria-modal');
+        Drawer.syncLock();
+        if (wasOpen && restoreFocus && Drawer.lastFocus && typeof Drawer.lastFocus.focus === 'function') {
+          Drawer.lastFocus.focus({ preventScroll: true });
+        }
+        Drawer.lastFocus = null;
+      },
+
+      toggle(panel, trigger) {
+        const isOpen = panel.classList.contains('is-mobile-open');
+        Drawer.closeAll(false);
+        if (!isOpen) {
+          Drawer.lastFocus = trigger || document.activeElement;
+          panel.classList.add('is-mobile-open');
+          panel.setAttribute('aria-modal', 'true');
+          Drawer.syncLock();
+          const first = panel.querySelector('input, button, [href]');
+          first?.focus({ preventScroll: true });
+        }
+        return !isOpen;
+      },
+    };
+
+    /* Mobile bottom nav ──────────────────────────────── */
+    const MobileNav = {
+      setActive(btn) {
+        [el.mobPreview, el.mobSections, el.mobTokens].forEach(b => {
+          if (!b) return;
+          const on = b === btn;
+          b.classList.toggle('is-active', on);
+          b.setAttribute('aria-pressed', String(on));
+        });
+      },
+      init() {
+        el.mobPreview?.addEventListener('click', () => { Drawer.closeAll(false); document.getElementById('preview-main')?.focus({ preventScroll: true }); });
+        el.mobSections?.addEventListener('click', () => Drawer.toggle(el.nav, el.mobSections));
+        el.mobTokens?.addEventListener('click', () => Drawer.toggle(el.editor, el.mobTokens));
+        el.mobSearch?.addEventListener('click', () => { Drawer.closeAll(false); window._openCommandPalette?.(); });
+      },
+    };
+
+    /* Navigation filter ──────────────────────────────── */
+    function initNavFilter() {
+      const input = document.getElementById('nav-filter');
+      const empty = document.getElementById('nav-empty');
+      if (!input) return;
+      const apply = debounce(() => {
+        const q = input.value.trim().toLowerCase();
+        let visible = 0;
+        el.nav.querySelectorAll('.nav-group').forEach(group => {
+          let groupVisible = 0;
+          group.querySelectorAll('.nav-item').forEach(item => {
+            const text = (item.querySelector('.nav-item__text')?.textContent || '').toLowerCase();
+            const label = (group.querySelector('.nav-group__label')?.textContent || '').toLowerCase();
+            const match = !q || text.includes(q) || label.includes(q);
+            item.parentElement.classList.toggle('is-filtered-out', !match);
+            if (match) groupVisible++;
+          });
+          group.classList.toggle('is-filtered-out', groupVisible === 0);
+          visible += groupVisible;
+        });
+        if (empty) empty.hidden = visible > 0;
+      }, 60);
+      input.addEventListener('input', apply);
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && input.value) { e.stopPropagation(); input.value = ''; apply(); }
+      });
+    }
+
+    /* About dialog ───────────────────────────────────── */
+    function initAbout() {
+      const dlg = document.getElementById('about-modal');
+      if (!dlg) return;
+      let opener = null;
+      document.querySelectorAll('[data-about-open]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          opener = btn;
+          if (typeof dlg.showModal === 'function') { if (!dlg.open) dlg.showModal(); }
+          else dlg.setAttribute('open', '');
+        });
+      });
+      dlg.querySelectorAll('[data-about-close]').forEach(btn => btn.addEventListener('click', () => dlg.close()));
+      dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+      dlg.addEventListener('close', () => opener?.focus({ preventScroll: true }));
+    }
+
+    /* Boot ───────────────────────────────────────────── */
+    function init() {
+      if (!el.nav || !el.editor) return;
+
+      // Restore persisted desktop collapse state; default the nav to its rail on tablets
+      let navCollapsed = false, edCollapsed = false;
+      try {
+        navCollapsed = localStorage.getItem('dsb-nav-collapsed') === '1';
+        edCollapsed  = localStorage.getItem('dsb-editor-collapsed') === '1';
+        if (localStorage.getItem('dsb-nav-collapsed') === null && window.innerWidth <= RAIL_BP && !isMobile()) navCollapsed = true;
+      } catch (_) {}
+      el.nav.classList.toggle('is-collapsed', navCollapsed);
+      el.editor.classList.toggle('is-collapsed', edCollapsed);
+      syncNav();
+      syncEditor();
+
+      el.navBtn?.addEventListener('click', () => toggleNav());
+      el.navCollapse?.addEventListener('click', () => toggleNav());
+      el.edBtn?.addEventListener('click', () => toggleEditor());
+      el.edCollapse?.addEventListener('click', () => toggleEditor());
+      el.edExpand?.addEventListener('click', () => toggleEditor(false));
+      el.overlay?.addEventListener('click', () => Drawer.closeAll());
+
+      // Leaving the mobile breakpoint: drop drawer state so panels return to the shell
+      let wasMobile = isMobile();
+      window.addEventListener('resize', debounce(() => {
+        const nowMobile = isMobile();
+        if (wasMobile && !nowMobile) Drawer.closeAll(false);
+        if (nowMobile !== wasMobile) { wasMobile = nowMobile; syncNav(); syncEditor(); }
+        if (nowMobile) el.editor.removeAttribute('inert');
+      }, 120));
+
+      MobileNav.init();
+      initNavFilter();
+      initAbout();
+    }
+
+    return { init, isMobile, closeDrawers: () => Drawer.closeAll(false) };
+  })();
 
   /* ── Theme toggle ── */
   function initTheme() {
@@ -3325,35 +3584,51 @@ const UI = (() => {
         msgEl.appendChild(p);
       } else {
         const warn = document.createElement('p');
-        warn.style.cssText = 'margin-top:10px;padding:8px 10px;background:var(--status-warning-bg,rgba(255,180,0,.12));color:var(--status-warning,#f5a623);border-radius:var(--r-base,4px);font-size:0.8125rem;line-height:1.5';
+        warn.style.cssText = 'margin-top:10px;padding:8px 10px;background:var(--app-warning-bg);color:var(--app-warning);border-radius:var(--app-radius-sm);font-size:0.8125rem;line-height:1.5';
         warn.textContent = part;
         msgEl.appendChild(warn);
       }
     });
     const okBtn = document.getElementById('confirm-ok');
     okBtn.textContent = okLabel;
-    okBtn.style.background = danger ? 'var(--status-error,#e5484d)' : '';
-    okBtn.style.borderColor = danger ? 'var(--status-error,#e5484d)' : '';
-    okBtn.style.color = danger ? '#fff' : '';
+    okBtn.classList.toggle('app-btn--danger', danger);
+    okBtn.classList.toggle('app-btn--primary', !danger);
     modal._onOk = onOk;
+    modal._opener = document.activeElement;
     modal.hidden = false;
+    document.getElementById('confirm-cancel')?.focus({ preventScroll: true });
+  }
+
+  function closeConfirm() {
+    const modal = document.getElementById('confirm-modal');
+    if (!modal || modal.hidden) return;
+    modal.hidden = true;
+    modal._onOk = null;
+    pendingDeleteId = null;
+    const opener = modal._opener;
+    modal._opener = null;
+    if (opener && typeof opener.focus === 'function') {
+      setTimeout(() => { if (document.contains(opener)) opener.focus({ preventScroll: true }); }, 0);
+    }
   }
 
   function initConfirmModal() {
-    document.getElementById('confirm-cancel')?.addEventListener('click', () => {
-      const modal = document.getElementById('confirm-modal');
-      modal.hidden = true;
-      modal._onOk = null;
-      pendingDeleteId = null;
-    });
+    const modal = document.getElementById('confirm-modal');
+    document.getElementById('confirm-cancel')?.addEventListener('click', closeConfirm);
     document.getElementById('confirm-ok')?.addEventListener('click', () => {
-      const modal = document.getElementById('confirm-modal');
-      if (modal._onOk) {
-        modal._onOk();
-        modal._onOk = null;
-      }
-      modal.hidden = true;
+      const onOk = modal._onOk;
+      modal._onOk = null;
+      closeConfirm();
+      if (onOk) onOk();
     });
+    // Trap focus between the two buttons while open
+    modal?.addEventListener('keydown', e => {
+      if (e.key !== 'Tab') return;
+      const btns = [document.getElementById('confirm-cancel'), document.getElementById('confirm-ok')];
+      if (e.shiftKey && document.activeElement === btns[0]) { e.preventDefault(); btns[1].focus(); }
+      else if (!e.shiftKey && document.activeElement === btns[1]) { e.preventDefault(); btns[0].focus(); }
+    });
+    modal?.addEventListener('click', e => { if (e.target === modal) closeConfirm(); });
 
     document.getElementById('btn-reset-all')?.addEventListener('click', () => {
       showConfirm({
@@ -3376,8 +3651,11 @@ const UI = (() => {
         const sec = link.getAttribute('data-section');
         const target = document.getElementById(`section-${sec}`);
         if (target) {
+          if (Shell.isMobile()) Shell.closeDrawers();
+          lockScrollSpy();
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
           setActiveSection(sec);
+          target.focus({ preventScroll: true });
         }
       });
     });
@@ -3390,6 +3668,7 @@ const UI = (() => {
       const tokens = TokenStore.getTokensByCategory(cat);
       const hasModified = tokens.some(t => t.value !== t.defaultValue || t.darkValue !== t.defaultDarkValue);
       dot.classList.toggle('is-visible', hasModified);
+      dot.closest('.nav-item')?.classList.toggle('is-modified', hasModified);
     });
   }
 
@@ -3421,10 +3700,17 @@ const UI = (() => {
 
       // Close overlays on Escape
       if (e.key === 'Escape') {
-        document.getElementById('cmd-overlay').hidden = true;
-        document.getElementById('confirm-modal').hidden = true;
-        document.getElementById('settings-popover').hidden = true;
-        document.getElementById('settings-backdrop').hidden = true;
+        closeCommandPalette();
+        closeConfirm();
+        closeSettingsPopover();
+        if (Shell.isMobile()) Shell.closeDrawers();
+        return;
+      }
+
+      // Ctrl/Cmd+K — command palette
+      if (meta && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault();
+        window._openCommandPalette?.();
         return;
       }
 
@@ -3540,7 +3826,7 @@ const UI = (() => {
     initSettings();
     initCommandPalette();
     initImportExport();
-    initPanelToggles();
+    Shell.init();
     initTheme();
     initUndoRedo();
     initConfirmModal();

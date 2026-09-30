@@ -1,493 +1,369 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Changelog — Design System Builder</title>
 
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-LQGBVTB39N"></script>
+  <!-- Apply theme before paint to avoid a flash of the wrong theme -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-LQGBVTB39N');
+    (function () {
+      try {
+        var saved = JSON.parse(localStorage.getItem('dsb-v4-state-v1') || 'null');
+        var stored = saved && saved.settings && saved.settings.appTheme;
+        var theme = stored || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      } catch (_) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
   </script>
-  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-  <meta name="description" content="What's new in Design System Builder." />
+
+  <meta name="description" content="Release notes for Design System Builder: new features, improvements and fixes to the token-driven design system generator." />
+  <meta name="author" content="Farhan" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)" />
+  <link rel="canonical" href="https://design-system.farhan.app/changelog.html" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Design System Builder" />
+  <meta property="og:title" content="Changelog — Design System Builder" />
+  <meta property="og:description" content="Release notes for Design System Builder: new features, improvements and fixes." />
+  <meta property="og:url" content="https://design-system.farhan.app/changelog.html" />
+  <meta property="og:image" content="https://design-system.farhan.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Design System Builder — a token editor beside a live component preview" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Changelog — Design System Builder" />
+  <meta name="twitter:description" content="Release notes for Design System Builder: new features, improvements and fixes." />
+  <meta name="twitter:image" content="https://design-system.farhan.app/og-image.png" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
   <style>
-    html, body {
-      height: auto !important;
-      overflow: auto !important;
-    }
-
-    .cl-body {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 56px 32px 120px;
-    }
-
-    .cl-heading {
-      margin-bottom: 48px;
-    }
-
-    .cl-heading h1 {
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: var(--app-text);
-      margin-bottom: 6px;
-    }
-
-    .cl-heading p {
-      font-size: 13px;
-      color: var(--app-text-muted);
-    }
-
-    /* Entry row */
-    .cl-entry {
-      display: grid;
-      grid-template-columns: 148px 1fr;
-      gap: 0 40px;
-      padding: 28px 0;
-      border-top: 1px solid var(--app-border);
-    }
-
-    .cl-entry:last-child {
-      border-bottom: 1px solid var(--app-border);
-    }
-
-    .cl-entry__aside {
-      padding-top: 2px;
-    }
-
-    .cl-entry__version {
-      font-family: var(--app-font-mono);
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--app-text);
-      margin-bottom: 3px;
-    }
-
-    .cl-entry__date {
-      font-size: 11px;
-      color: var(--app-text-subtle);
-    }
-
-    .cl-entry__title {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--app-text);
-      letter-spacing: -0.01em;
-      margin-bottom: 14px;
-      line-height: 1.4;
-    }
-
-    /* Change list */
-    .cl-list {
-      list-style: none;
+    /* ── Changelog page — Vercel-style release notes ── */
+    .changelog-main {
+      flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 7px;
+      overflow: auto;
+      min-height: 0;
+      background: var(--app-panel);
+    }
+    .changelog-area { flex: 1; padding: 72px 32px 120px; }
+    .changelog { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; }
+
+    .cl-header { display: flex; flex-direction: column; gap: var(--app-sp-3); margin-bottom: 72px; }
+    .cl-eyebrow {
+      font-size: var(--app-fs-xs); font-weight: 500; color: var(--app-text-subtle);
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .cl-title { font-size: 44px; font-weight: 600; color: var(--app-text); letter-spacing: -0.035em; line-height: 1.05; }
+    .cl-sub { font-size: var(--app-fs-lg); color: var(--app-text-muted); line-height: 1.6; max-width: 560px; margin-top: var(--app-sp-2); }
+
+    .cl-entry { padding-bottom: 56px; margin-bottom: 56px; border-bottom: 1px solid var(--app-border); scroll-margin-top: 24px; }
+    .cl-entry:last-of-type { border-bottom: none; margin-bottom: 0; padding-bottom: 8px; }
+    .cl-entry:focus { outline: none; }
+
+    .cl-meta {
+      display: flex; align-items: center; gap: var(--app-sp-4);
+      margin-bottom: var(--app-sp-4);
+      font-family: var(--app-font-mono); font-size: var(--app-fs-md); color: var(--app-text-subtle);
+      letter-spacing: -0.01em;
+    }
+    .cl-entry-title {
+      font-size: 28px; font-weight: 600; color: var(--app-text);
+      letter-spacing: -0.025em; line-height: 1.2; margin-bottom: 20px;
+    }
+    .cl-entry-title a { color: inherit; text-decoration: none; transition: color var(--app-t-fast); border-radius: 4px; }
+    .cl-entry-title a:hover { color: var(--app-info); }
+    .cl-entry-title a:focus-visible { outline: none; box-shadow: var(--app-focus-ring); }
+
+    .cl-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .cl-item { display: grid; grid-template-columns: 96px 1fr; gap: var(--app-sp-5); align-items: start; }
+    .cl-item__text { font-size: var(--app-fs-lg); color: var(--app-text-muted); line-height: 1.65; }
+    .cl-item__text strong { color: var(--app-text); font-weight: 600; }
+    .cl-item__text code {
+      font-family: var(--app-font-mono); font-size: 0.88em;
+      background: var(--app-elevated); border: 1px solid var(--app-border);
+      border-radius: var(--app-r-sm); padding: 1px 6px; color: var(--app-text);
     }
 
-    .cl-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 0;
-    }
-
-    .cl-item__tag {
-      width: 100px;
-      flex-shrink: 0;
-      padding-top: 3px;
-    }
-
-    .cl-item__text {
-      flex: 1;
-      font-size: 13px;
-      color: var(--app-text-muted);
-      line-height: 1.6;
-    }
-
-    /* Tags */
     .cl-tag {
-      display: inline-flex;
-      align-items: center;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-      text-transform: uppercase;
-      padding: 2px 6px;
-      border-radius: 3px;
-      white-space: nowrap;
+      display: inline-flex; align-items: center; justify-content: center;
+      height: var(--app-h-chip); padding: 0 var(--app-sp-3); margin-top: 2px;
+      border-radius: var(--app-r-pill); border: 1px solid transparent;
+      font-size: 10.5px; font-weight: 600; letter-spacing: 0.02em; text-transform: uppercase;
+      white-space: nowrap; background: var(--app-elevated); color: var(--app-text-muted);
     }
+    .cl-tag--new      { background: var(--app-info-bg);    color: hsl(217 91% 42%);   border-color: hsl(var(--app-c-info) / 0.3); }
+    [data-theme="dark"] .cl-tag--new { color: var(--app-info); }
+    .cl-tag--fix      { background: var(--app-success-bg); color: var(--app-success); border-color: hsl(var(--app-c-success) / 0.3); }
+    .cl-tag--improved { background: hsl(262 85% 96%); color: hsl(262 70% 46%); border-color: hsl(262 75% 82%); }
+    .cl-tag--removed  { background: hsl(0 88% 95%);   color: hsl(0 72% 42%);   border-color: hsl(0 78% 82%); }
+    .cl-tag--experimental { background: var(--app-warning-bg); color: var(--app-warning); border-color: hsl(var(--app-c-warning) / 0.35); }
+    [data-theme="dark"] .cl-tag--improved { background: hsl(262 55% 15%); color: hsl(262 85% 72%); border-color: hsl(262 50% 30%); }
+    [data-theme="dark"] .cl-tag--removed  { background: hsl(0 60% 13%);   color: hsl(0 85% 72%);   border-color: hsl(0 55% 30%); }
 
-    .cl-tag--new          { background: rgba(50,145,255,0.12);  color: #3291ff; }
-    .cl-tag--fix          { background: rgba(16,185,129,0.12);  color: #10b981; }
-    .cl-tag--improved     { background: rgba(168,85,247,0.12);  color: #a855f7; }
-    .cl-tag--removed      { background: rgba(239,68,68,0.12);   color: #ef4444; }
-    .cl-tag--experimental { background: rgba(245,158,11,0.12);  color: #f59e0b; }
-
-    [data-theme="light"] .cl-tag--new          { background: rgba(0,112,243,0.08);  color: #0070f3; }
-    [data-theme="light"] .cl-tag--fix          { background: rgba(16,185,129,0.08); color: #059669; }
-    [data-theme="light"] .cl-tag--improved     { background: rgba(168,85,247,0.08); color: #9333ea; }
-    [data-theme="light"] .cl-tag--removed      { background: rgba(239,68,68,0.08);  color: #dc2626; }
-    [data-theme="light"] .cl-tag--experimental { background: rgba(245,158,11,0.08); color: #d97706; }
-
-    /* Footer */
-    .cl-footer {
-      border-top: 1px solid var(--app-border);
-      padding: 14px 32px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-size: 11px;
-      color: var(--app-text-subtle);
+    @media (max-width: 640px) {
+      .changelog-area { padding: 32px 18px 56px; }
+      .cl-title { font-size: 30px; letter-spacing: -0.03em; }
+      .cl-entry-title { font-size: 20px; }
+      .cl-entry { padding-bottom: 40px; margin-bottom: 40px; }
+      .cl-header { margin-bottom: 44px; }
+      .cl-sub { font-size: var(--app-fs-md); }
+      .cl-item { grid-template-columns: 1fr; gap: var(--app-sp-2); }
+      .cl-item__text { font-size: var(--app-fs-md); }
     }
-
-    .cl-footer a {
-      color: var(--app-text-subtle);
-      text-decoration: none;
-      transition: color 0.15s;
-    }
-
-    .cl-footer a:hover { color: var(--app-text-muted); }
-
-    .cl-footer__links {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .cl-footer__dot {
-      width: 3px;
-      height: 3px;
-      border-radius: 50%;
-      background: var(--app-text-subtle);
-    }
-
-    @media (max-width: 600px) {
-      .cl-entry { grid-template-columns: 1fr; gap: 6px; }
-      .cl-body  { padding: 40px 16px 100px; }
-      .cl-footer { padding: 14px 16px; }
+    @media (max-width: 380px) {
+      .cl-title { font-size: 26px; }
+      .cl-entry-title { font-size: 18px; }
+      .changelog-area { padding: 24px 14px 48px; }
     }
   </style>
 </head>
 <body>
 
-<header class="app-header" role="banner">
-  <a class="app-header__brand" href="/">
+<a class="skip-link" href="#changelog-main">Skip to changelog</a>
+
+<header class="app-header">
+  <a class="app-header__brand" href="/" aria-label="Design System Builder — home">
     <span class="app-header__logo" aria-hidden="true">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-        <rect x="2" y="2" width="7" height="7" rx="1.5" fill="var(--app-accent)"/>
-        <rect x="11" y="2" width="7" height="7" rx="1.5" fill="var(--app-accent)" opacity="0.5"/>
-        <rect x="2" y="11" width="7" height="7" rx="1.5" fill="var(--app-accent)" opacity="0.5"/>
-        <rect x="11" y="11" width="7" height="7" rx="1.5" fill="var(--app-accent)" opacity="0.3"/>
-      </svg>
+      <svg viewBox="0 0 16 16" fill="currentColor"><path d="M3 3h4v4H3z"/><path d="M9 3h4v4H9z" opacity=".55"/><path d="M3 9h4v4H3z" opacity=".55"/><path d="M9 9h4v4H9z" opacity=".3"/></svg>
     </span>
     <span class="app-header__title">Design System</span>
-    <span class="app-header__version">v4.3</span>
   </a>
+  <a href="changelog.html" class="version-pill" aria-current="page">v4.4</a>
+
+  <span class="app-header__spacer"></span>
+
   <div class="app-header__end">
     <div class="app-header__group">
-      <button class="app-btn app-btn--ghost app-btn--icon" id="btn-theme" aria-label="Toggle theme" data-tooltip="Toggle theme">
-        <svg class="icon-moon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
-        <svg class="icon-sun" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <button class="app-btn app-btn--ghost app-btn--icon" id="btn-theme" type="button" aria-label="Switch to dark theme" data-tooltip="Toggle theme" data-tooltip-pos="below-left">
+        <svg class="icon icon-sm icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="icon icon-sm icon-sun" viewBox="0 0 24 24" aria-hidden="true" style="display:none"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
       </button>
-    </div>
-    <div class="app-header__sep" aria-hidden="true"></div>
-    <div class="app-header__group">
-      <a href="/" class="app-btn app-btn--ghost" aria-label="Back to builder">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      <a href="/" class="app-btn app-btn--outline">
+        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
         Back to builder
       </a>
     </div>
   </div>
 </header>
 
-<div class="cl-body">
-  <div class="cl-heading">
-    <h1>Changelog</h1>
-    <p>Updates, fixes, and improvements to Design System Builder.</p>
+<main class="changelog-main" id="changelog-main" tabindex="-1">
+  <div class="changelog-area">
+    <div class="changelog">
+      <header class="cl-header">
+        <p class="cl-eyebrow">Product updates</p>
+        <h1 class="cl-title">Changelog</h1>
+        <p class="cl-sub">New features, improvements, and fixes shipped to Design System Builder.</p>
+      </header>
+
+      <article class="cl-entry" id="v4-4" aria-labelledby="v4-4-title">
+        <p class="cl-meta"><span class="version-pill">v4.4</span> <time datetime="2026-09-30">30 September 2026</time></p>
+        <h2 class="cl-entry-title" id="v4-4-title"><a href="#v4-4">App shell benchmarked against App Blueprint, accessibility and SEO pass</a></h2>
+        <ul class="cl-list">
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text"><strong>Shell redesign</strong> — the topbar, navigation, token editor and footer now follow the <a href="https://app-blueprint.farhan.app/" target="_blank" rel="noopener noreferrer">App Blueprint</a> design system: shadcn-neutral palette, 52px topbar with version pill, 240px navigation that collapses to an icon rail, inspector-style editor with an edge tab to reopen it, slim app-wide footer, and a dot-grid canvas around the preview.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text"><strong>Mobile shell</strong> — navigation and token editor open as off-canvas drawers from a bottom navigation bar, replacing the read-only mobile banner. Every feature now works on phones.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Navigation filter, <code>Ctrl/⌘ K</code> shortcut for the command palette, and a system-preference default for light/dark theme applied before first paint.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--improved">Improved</span><span class="cl-item__text"><strong>Accessibility</strong> — skip link, semantic landmarks and lists, real buttons for every control, focus rings on every interactive element, focus trapping and return for the settings, confirm and command dialogs, combobox semantics for search, roving tabs in the CSS panel, and text alternatives for modified-token indicators. Text colours meet WCAG AA contrast.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--improved">Improved</span><span class="cl-item__text"><strong>On-page SEO</strong> — descriptive titles, canonical URLs, Open Graph and Twitter cards with a social image, JSON-LD structured data, <code>robots.txt</code> and <code>sitemap.xml</code>, SVG favicon and touch icon.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--fix">Fix</span><span class="cl-item__text">Changelog page referenced a missing favicon and still loaded an analytics script; both removed. Entry titles are now proper headings with machine-readable dates.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--removed">Removed</span><span class="cl-item__text">Noise texture overlay and the "open on a wider screen" mobile banner.</span></li>
+        </ul>
+      </article>
+
+      <article class="cl-entry" id="v4-3" aria-labelledby="v4-3-title">
+        <p class="cl-meta"><span class="version-pill">v4.3</span> <time datetime="2026-04-06">6 April 2026</time></p>
+        <h2 class="cl-entry-title" id="v4-3-title"><a href="#v4-3">Framework tab CSS output fix on page load</a></h2>
+        <ul class="cl-list">
+          <li class="cl-item"><span class="cl-tag cl-tag--fix">Fix</span><span class="cl-item__text">CSS output panel no longer shows tokens-only on a fresh load when the Framework tab was last active. The panel initialisation now restores the saved tab before rendering CSS, so the correct output appears immediately without needing a second click.</span></li>
+        </ul>
+      </article>
+
+      <article class="cl-entry" id="v4-2" aria-labelledby="v4-2-title">
+        <p class="cl-meta"><span class="version-pill">v4.2</span> <time datetime="2026-04-04">4 April 2026</time></p>
+        <h2 class="cl-entry-title" id="v4-2-title"><a href="#v4-2">CSS panel polish &amp; changelog fixes</a></h2>
+        <ul class="cl-list">
+          <li class="cl-item"><span class="cl-tag cl-tag--fix">Fix</span><span class="cl-item__text">CSS panel header — "Framework" tab text and action buttons were being clipped by overflow:hidden. Title now truncates instead; tabs and buttons are always fully visible.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--improved">Improved</span><span class="cl-item__text">"CSS Output" label shortened to "CSS" — frees space in the compact panel header.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--fix">Fix</span><span class="cl-item__text">Changelog page header — mismatched closing tag broke the page layout; version badge corrected from v3 to v4.</span></li>
+        </ul>
+      </article>
+
+      <article class="cl-entry" id="v4-1" aria-labelledby="v4-1-title">
+        <p class="cl-meta"><span class="version-pill">v4.1</span> <time datetime="2026-04-04">4 April 2026</time></p>
+        <h2 class="cl-entry-title" id="v4-1-title"><a href="#v4-1">Full Geist colour palette</a></h2>
+        <ul class="cl-list">
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Six new colour scales added to primitives — Purple, Pink, Teal, Cyan, Orange, Yellow — each with full 100–900 steps and light/dark values matching Geist's palette.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--improved">Improved</span><span class="cl-item__text">Green, Red, and Amber scales expanded from 5 sparse steps to full 9-step scales (100–900).</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--fix">Fix</span><span class="cl-item__text">Colour primitives preview was showing only 3 scales — Green and Red were mapped to wrong prefixes (emerald-, rose-) and rendered blank. All 11 scales now display correctly.</span></li>
+        </ul>
+      </article>
+
+      <article class="cl-entry" id="v4-0" aria-labelledby="v4-0-title">
+        <p class="cl-meta"><span class="version-pill">v4.0</span> <time datetime="2026-04-04">4 April 2026</time></p>
+        <h2 class="cl-entry-title" id="v4-0-title"><a href="#v4-0">v4 — Geist-identical styles, token editor redesign &amp; full live sync</a></h2>
+        <ul class="cl-list">
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">All exported component styles now match Vercel Geist exactly — 36px button height, 6px radius, black/white focus borders, flat cards, true neutral grays, uppercase table headers.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Token editor panel rebuilt — double-dash prefix label, moon icon dark toggle, checkerboard colour swatch, 26px compact inputs, modified indicator as left border stripe.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--improved">Improved</span><span class="cl-item__text">Full live sync audit — editing any component token (btn-, card-, input-, tab-, etc.) now immediately rerenders the correct preview section via a regex-based component section map.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--fix">Fix</span><span class="cl-item__text">Dark mode hardcoded values replaced with token vars — toggle thumb, modal shadow, table hover, tabs border, input placeholder, select chevron SVG.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--fix">Fix</span><span class="cl-item__text">Fluid token resolution — computeTokenValue now receives the full token map so clamp() endpoints that reference token names resolve correctly.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--fix">Fix</span><span class="cl-item__text">Dark block generation — fluid tokens were incorrectly excluded from the dark override output due to a falsy check on fluidMin.</span></li>
+        </ul>
+      </article>
+
+      <article class="cl-entry" id="v3-4" aria-labelledby="v3-4-title">
+        <p class="cl-meta"><span class="version-pill">v3.4</span> <time datetime="2026-04-04">4 April 2026</time></p>
+        <h2 class="cl-entry-title" id="v3-4-title"><a href="#v3-4">Changelog, class labels &amp; app tooltips</a></h2>
+        <ul class="cl-list">
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Changelog page with two-column layout, tagged entries, and full release history.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Component section headers now show their CSS class names in muted monospace for quick reference.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">App header buttons use styled data-tooltip tooltips — replaces slow browser title attributes. Toggle buttons update their label dynamically.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--improved">Improved</span><span class="cl-item__text">Getting Started section redesigned with a controls reference grid covering every top-bar button.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--fix">Fix</span><span class="cl-item__text">Non-working keyboard shortcut references removed from tooltips and documentation.</span></li>
+        </ul>
+      </article>
+
+      <article class="cl-entry" id="v3-3" aria-labelledby="v3-3-title">
+        <p class="cl-meta"><span class="version-pill">v3.3</span> <time datetime="2026-04-03">3 April 2026</time></p>
+        <h2 class="cl-entry-title" id="v3-3-title"><a href="#v3-3">Git, Cloudflare deployment, favicon &amp; mobile layout</a></h2>
+        <ul class="cl-list">
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Project moved to Git — version controlled and pushed to GitHub.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Deployed to Cloudflare Pages from the repo root — index.html, app.js, style.css served as a static site.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Custom favicon from brand logo SVG. Full Open Graph and Twitter card meta tags for clean link previews.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Mobile layout — app UI hidden below 1000px, style guide shown alone with a banner and footer.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--improved">Improved</span><span class="cl-item__text">Style guide constrained to 900px max-width and centered. Logo in header is now a reload link.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--fix">Fix</span><span class="cl-item__text">Panel toggle desync resolved — nav and editor now share a single sync function so neither clobbers the other.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--fix">Fix</span><span class="cl-item__text">Hero title italic text no longer clips on the right edge.</span></li>
+        </ul>
+      </article>
+
+      <article class="cl-entry" id="v3-2" aria-labelledby="v3-2-title">
+        <p class="cl-meta"><span class="version-pill">v3.2</span> <time datetime="2026-04-02">2 April 2026</time></p>
+        <h2 class="cl-entry-title" id="v3-2-title"><a href="#v3-2">Colour palette redesign, code tokens &amp; preview polish</a></h2>
+        <ul class="cl-list">
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Colour primitives redesigned in Geist style — connected horizontal strips with label left and numbered steps.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Code tokens split into inline and block — each controls colour, font size, line height, padding, radius, background, and border independently.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--improved">Improved</span><span class="cl-item__text">Radius and shadow previews rebuilt with a minimal stage layout. Consistent spacing rhythm across all sections.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--removed">Removed</span><span class="cl-item__text">Duplicate status colours removed from primitives. Hover animation removed from colour swatches.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--fix">Fix</span><span class="cl-item__text">Pre/block code colour no longer overrides to accent on every render.</span></li>
+        </ul>
+      </article>
+
+      <article class="cl-entry" id="v3-1" aria-labelledby="v3-1-title">
+        <p class="cl-meta"><span class="version-pill">v3.1</span> <time datetime="2026-04-01">1 April 2026</time></p>
+        <h2 class="cl-entry-title" id="v3-1-title"><a href="#v3-1">Fluid type, type-scale token linking &amp; settings</a></h2>
+        <ul class="cl-list">
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Fluid type tokens reference type scale token names as endpoints — max always matches the actual scale.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Fluid spacing tokens using clamp(). Settings panel exposes min/max viewport breakpoints for all clamp calculations.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--fix">Fix</span><span class="cl-item__text">Crash resolved when fluid token endpoints referenced token names instead of raw values.</span></li>
+        </ul>
+      </article>
+
+      <article class="cl-entry" id="v3-0" aria-labelledby="v3-0-title">
+        <p class="cl-meta"><span class="version-pill">v3.0</span> <time datetime="2026-03-31">31 March 2026</time></p>
+        <h2 class="cl-entry-title" id="v3-0-title"><a href="#v3-0">v3 — Geist-inspired redesign &amp; live token editor</a></h2>
+        <ul class="cl-list">
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Complete redesign — dark/light mode, three-panel layout (nav, preview, editor), noise texture background.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Live token editor — add, edit, delete tokens with instant preview and CSS output updates. Zero page refresh.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">CSS output panel with Tokens and Framework tabs, copy to clipboard, and download as file.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Undo / redo with step badges. Import / export token sets as JSON. Command palette for quick navigation.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Full component library in the preview — buttons, inputs, badges, alerts, cards, modals, tabs, tooltips, avatars, and more.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--experimental">Experimental</span><span class="cl-item__text">Modular IIFE architecture — TokenStore, CSSEngine, ThemeEngine, PreviewEngine, UI. No build step, no frameworks.</span></li>
+        </ul>
+      </article>
+
+      <article class="cl-entry" id="v2-3" aria-labelledby="v2-3-title">
+        <p class="cl-meta"><span class="version-pill">v2.3</span> <time datetime="2026-03-30">30 March 2026</time></p>
+        <h2 class="cl-entry-title" id="v2-3-title"><a href="#v2-3">Component token controls &amp; framework CSS output</a></h2>
+        <ul class="cl-list">
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Component-level token controls — buttons, inputs, badges, and cards each have dedicated editable tokens for padding, radius, colour, and font size.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Framework CSS tab — generates utility classes and component styles driven by the active token set.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--improved">Improved</span><span class="cl-item__text">Individual colour tokens can carry separate light and dark values with a per-token toggle.</span></li>
+        </ul>
+      </article>
+
+      <article class="cl-entry" id="v2-2" aria-labelledby="v2-2-title">
+        <p class="cl-meta"><span class="version-pill">v2.2</span> <time datetime="2026-03-29">29 March 2026</time></p>
+        <h2 class="cl-entry-title" id="v2-2-title"><a href="#v2-2">Motion, shadow tokens &amp; visual scale previews</a></h2>
+        <ul class="cl-list">
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Motion tokens — duration and easing values with interactive click-to-preview boxes in the style guide.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Shadow tokens from sm to 2xl with live preview and CSS output.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--improved">Improved</span><span class="cl-item__text">Type scale and spacing sections show visual scale previews, not just raw values.</span></li>
+        </ul>
+      </article>
+
+      <article class="cl-entry" id="v2-1" aria-labelledby="v2-1-title">
+        <p class="cl-meta"><span class="version-pill">v2.1</span> <time datetime="2026-03-28">28 March 2026</time></p>
+        <h2 class="cl-entry-title" id="v2-1-title"><a href="#v2-1">Live CSS output &amp; semantic token mapping</a></h2>
+        <ul class="cl-list">
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">CSS :root block generated live from all tokens. Dark mode override block auto-generated from tokens with dark values.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Primitive → semantic token mapping — component styles reference semantic tokens, never hardcoded values.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Undo / redo and import / export token sets as JSON.</span></li>
+        </ul>
+      </article>
+
+      <article class="cl-entry" id="v2-0" aria-labelledby="v2-0-title">
+        <p class="cl-meta"><span class="version-pill">v2.0</span> <time datetime="2026-03-27">27 March 2026</time></p>
+        <h2 class="cl-entry-title" id="v2-0-title"><a href="#v2-0">Token-driven live preview</a></h2>
+        <ul class="cl-list">
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Replaced static markup with a JS-rendered live preview — every section re-renders instantly when tokens change.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Token categories introduced — colour, typography, spacing, and radius.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--improved">Improved</span><span class="cl-item__text">Single-file app — no build step, no external dependencies beyond Google Fonts.</span></li>
+        </ul>
+      </article>
+
+      <article class="cl-entry" id="v1-0" aria-labelledby="v1-0-title">
+        <p class="cl-meta"><span class="version-pill">v1.0</span> <time datetime="2026-03-25">25 March 2026</time></p>
+        <h2 class="cl-entry-title" id="v1-0-title"><a href="#v1-0">Initial release — static style guide</a></h2>
+        <ul class="cl-list">
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Static HTML/CSS style guide — colour swatches, type scale, spacing scale, and basic component examples.</span></li>
+          <li class="cl-item"><span class="cl-tag cl-tag--new">New</span><span class="cl-item__text">Dark / light mode via data-theme attribute. Single file, no dependencies, instant load.</span></li>
+        </ul>
+      </article>
+    </div>
   </div>
+</main>
 
-  <!-- v4.3 -->
-  <article class="cl-entry">
-    <div class="cl-entry__aside">
-      <p class="cl-entry__version">v4.3</p>
-      <p class="cl-entry__date">6 April 2026</p>
-    </div>
-    <div class="cl-entry__content">
-      <p class="cl-entry__title">Framework tab CSS output fix on page load</p>
-      <ul class="cl-list">
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--fix">Fix</span></span><span class="cl-item__text">CSS output panel no longer shows tokens-only on a fresh load when the Framework tab was last active. The panel initialisation now restores the saved tab before rendering CSS, so the correct output appears immediately without needing a second click.</span></li>
-      </ul>
-    </div>
-  </article>
-
-  <!-- v4.2 -->
-  <article class="cl-entry">
-    <div class="cl-entry__aside">
-      <p class="cl-entry__version">v4.2</p>
-      <p class="cl-entry__date">4 April 2026</p>
-    </div>
-    <div class="cl-entry__content">
-      <p class="cl-entry__title">CSS panel polish &amp; changelog fixes</p>
-      <ul class="cl-list">
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--fix">Fix</span></span><span class="cl-item__text">CSS panel header — "Framework" tab text and action buttons were being clipped by overflow:hidden. Title now truncates instead; tabs and buttons are always fully visible.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--improved">Improved</span></span><span class="cl-item__text">"CSS Output" label shortened to "CSS" — frees space in the compact panel header.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--fix">Fix</span></span><span class="cl-item__text">Changelog page header — mismatched closing tag broke the page layout; version badge corrected from v3 to v4.</span></li>
-      </ul>
-    </div>
-  </article>
-
-  <!-- v4.1 -->
-  <article class="cl-entry">
-    <div class="cl-entry__aside">
-      <p class="cl-entry__version">v4.1</p>
-      <p class="cl-entry__date">4 April 2026</p>
-    </div>
-    <div class="cl-entry__content">
-      <p class="cl-entry__title">Full Geist colour palette</p>
-      <ul class="cl-list">
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Six new colour scales added to primitives — Purple, Pink, Teal, Cyan, Orange, Yellow — each with full 100–900 steps and light/dark values matching Geist's palette.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--improved">Improved</span></span><span class="cl-item__text">Green, Red, and Amber scales expanded from 5 sparse steps to full 9-step scales (100–900).</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--fix">Fix</span></span><span class="cl-item__text">Colour primitives preview was showing only 3 scales — Green and Red were mapped to wrong prefixes (emerald-, rose-) and rendered blank. All 11 scales now display correctly.</span></li>
-      </ul>
-    </div>
-  </article>
-
-  <!-- v4.0 -->
-  <article class="cl-entry">
-    <div class="cl-entry__aside">
-      <p class="cl-entry__version">v4.0</p>
-      <p class="cl-entry__date">4 April 2026</p>
-    </div>
-    <div class="cl-entry__content">
-      <p class="cl-entry__title">v4 — Geist-identical styles, token editor redesign &amp; full live sync</p>
-      <ul class="cl-list">
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">All exported component styles now match Vercel Geist exactly — 36px button height, 6px radius, black/white focus borders, flat cards, true neutral grays, uppercase table headers.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Token editor panel rebuilt — double-dash prefix label, moon icon dark toggle, checkerboard colour swatch, 26px compact inputs, modified indicator as left border stripe.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--improved">Improved</span></span><span class="cl-item__text">Full live sync audit — editing any component token (btn-, card-, input-, tab-, etc.) now immediately rerenders the correct preview section via a regex-based component section map.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--fix">Fix</span></span><span class="cl-item__text">Dark mode hardcoded values replaced with token vars — toggle thumb, modal shadow, table hover, tabs border, input placeholder, select chevron SVG.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--fix">Fix</span></span><span class="cl-item__text">Fluid token resolution — computeTokenValue now receives the full token map so clamp() endpoints that reference token names resolve correctly.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--fix">Fix</span></span><span class="cl-item__text">Dark block generation — fluid tokens were incorrectly excluded from the dark override output due to a falsy check on fluidMin.</span></li>
-      </ul>
-    </div>
-  </article>
-
-  <!-- v3.4 -->
-  <article class="cl-entry">
-    <div class="cl-entry__aside">
-      <p class="cl-entry__version">v3.4</p>
-      <p class="cl-entry__date">4 April 2026</p>
-    </div>
-    <div class="cl-entry__content">
-      <p class="cl-entry__title">Changelog, class labels &amp; app tooltips</p>
-      <ul class="cl-list">
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Changelog page with two-column layout, tagged entries, and full release history.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Component section headers now show their CSS class names in muted monospace for quick reference.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">App header buttons use styled data-tooltip tooltips — replaces slow browser title attributes. Toggle buttons update their label dynamically.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--improved">Improved</span></span><span class="cl-item__text">Getting Started section redesigned with a controls reference grid covering every top-bar button.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--fix">Fix</span></span><span class="cl-item__text">Non-working keyboard shortcut references removed from tooltips and documentation.</span></li>
-      </ul>
-    </div>
-  </article>
-
-  <!-- v3.3 -->
-  <article class="cl-entry">
-    <div class="cl-entry__aside">
-      <p class="cl-entry__version">v3.3</p>
-      <p class="cl-entry__date">3 April 2026</p>
-    </div>
-    <div class="cl-entry__content">
-      <p class="cl-entry__title">Git, Cloudflare deployment, favicon &amp; mobile layout</p>
-      <ul class="cl-list">
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Project moved to Git — version controlled and pushed to GitHub.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Deployed to Cloudflare Pages from the repo root — index.html, app.js, style.css served as a static site.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Custom favicon from brand logo SVG. Full Open Graph and Twitter card meta tags for clean link previews.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Mobile layout — app UI hidden below 1000px, style guide shown alone with a banner and footer.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--improved">Improved</span></span><span class="cl-item__text">Style guide constrained to 900px max-width and centered. Logo in header is now a reload link.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--fix">Fix</span></span><span class="cl-item__text">Panel toggle desync resolved — nav and editor now share a single sync function so neither clobbers the other.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--fix">Fix</span></span><span class="cl-item__text">Hero title italic text no longer clips on the right edge.</span></li>
-      </ul>
-    </div>
-  </article>
-
-  <!-- v3.2 -->
-  <article class="cl-entry">
-    <div class="cl-entry__aside">
-      <p class="cl-entry__version">v3.2</p>
-      <p class="cl-entry__date">2 April 2026</p>
-    </div>
-    <div class="cl-entry__content">
-      <p class="cl-entry__title">Colour palette redesign, code tokens &amp; preview polish</p>
-      <ul class="cl-list">
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Colour primitives redesigned in Geist style — connected horizontal strips with label left and numbered steps.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Code tokens split into inline and block — each controls colour, font size, line height, padding, radius, background, and border independently.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--improved">Improved</span></span><span class="cl-item__text">Radius and shadow previews rebuilt with a minimal stage layout. Consistent spacing rhythm across all sections.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--removed">Removed</span></span><span class="cl-item__text">Duplicate status colours removed from primitives. Hover animation removed from colour swatches.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--fix">Fix</span></span><span class="cl-item__text">Pre/block code colour no longer overrides to accent on every render.</span></li>
-      </ul>
-    </div>
-  </article>
-
-  <!-- v3.1 -->
-  <article class="cl-entry">
-    <div class="cl-entry__aside">
-      <p class="cl-entry__version">v3.1</p>
-      <p class="cl-entry__date">1 April 2026</p>
-    </div>
-    <div class="cl-entry__content">
-      <p class="cl-entry__title">Fluid type, type-scale token linking &amp; settings</p>
-      <ul class="cl-list">
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Fluid type tokens reference type scale token names as endpoints — max always matches the actual scale.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Fluid spacing tokens using clamp(). Settings panel exposes min/max viewport breakpoints for all clamp calculations.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--fix">Fix</span></span><span class="cl-item__text">Crash resolved when fluid token endpoints referenced token names instead of raw values.</span></li>
-      </ul>
-    </div>
-  </article>
-
-  <!-- v3.0 -->
-  <article class="cl-entry">
-    <div class="cl-entry__aside">
-      <p class="cl-entry__version">v3.0</p>
-      <p class="cl-entry__date">31 March 2026</p>
-    </div>
-    <div class="cl-entry__content">
-      <p class="cl-entry__title">v3 — Geist-inspired redesign &amp; live token editor</p>
-      <ul class="cl-list">
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Complete redesign — dark/light mode, three-panel layout (nav, preview, editor), noise texture background.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Live token editor — add, edit, delete tokens with instant preview and CSS output updates. Zero page refresh.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">CSS output panel with Tokens and Framework tabs, copy to clipboard, and download as file.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Undo / redo with step badges. Import / export token sets as JSON. Command palette for quick navigation.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Full component library in the preview — buttons, inputs, badges, alerts, cards, modals, tabs, tooltips, avatars, and more.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--experimental">Experimental</span></span><span class="cl-item__text">Modular IIFE architecture — TokenStore, CSSEngine, ThemeEngine, PreviewEngine, UI. No build step, no frameworks.</span></li>
-      </ul>
-    </div>
-  </article>
-
-  <!-- v2.3 -->
-  <article class="cl-entry">
-    <div class="cl-entry__aside">
-      <p class="cl-entry__version">v2.3</p>
-      <p class="cl-entry__date">30 March 2026</p>
-    </div>
-    <div class="cl-entry__content">
-      <p class="cl-entry__title">Component token controls &amp; framework CSS output</p>
-      <ul class="cl-list">
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Component-level token controls — buttons, inputs, badges, and cards each have dedicated editable tokens for padding, radius, colour, and font size.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Framework CSS tab — generates utility classes and component styles driven by the active token set.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--improved">Improved</span></span><span class="cl-item__text">Individual colour tokens can carry separate light and dark values with a per-token toggle.</span></li>
-      </ul>
-    </div>
-  </article>
-
-  <!-- v2.2 -->
-  <article class="cl-entry">
-    <div class="cl-entry__aside">
-      <p class="cl-entry__version">v2.2</p>
-      <p class="cl-entry__date">29 March 2026</p>
-    </div>
-    <div class="cl-entry__content">
-      <p class="cl-entry__title">Motion, shadow tokens &amp; visual scale previews</p>
-      <ul class="cl-list">
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Motion tokens — duration and easing values with interactive click-to-preview boxes in the style guide.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Shadow tokens from sm to 2xl with live preview and CSS output.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--improved">Improved</span></span><span class="cl-item__text">Type scale and spacing sections show visual scale previews, not just raw values.</span></li>
-      </ul>
-    </div>
-  </article>
-
-  <!-- v2.1 -->
-  <article class="cl-entry">
-    <div class="cl-entry__aside">
-      <p class="cl-entry__version">v2.1</p>
-      <p class="cl-entry__date">28 March 2026</p>
-    </div>
-    <div class="cl-entry__content">
-      <p class="cl-entry__title">Live CSS output &amp; semantic token mapping</p>
-      <ul class="cl-list">
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">CSS :root block generated live from all tokens. Dark mode override block auto-generated from tokens with dark values.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Primitive → semantic token mapping — component styles reference semantic tokens, never hardcoded values.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Undo / redo and import / export token sets as JSON.</span></li>
-      </ul>
-    </div>
-  </article>
-
-  <!-- v2.0 -->
-  <article class="cl-entry">
-    <div class="cl-entry__aside">
-      <p class="cl-entry__version">v2.0</p>
-      <p class="cl-entry__date">27 March 2026</p>
-    </div>
-    <div class="cl-entry__content">
-      <p class="cl-entry__title">Token-driven live preview</p>
-      <ul class="cl-list">
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Replaced static markup with a JS-rendered live preview — every section re-renders instantly when tokens change.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Token categories introduced — colour, typography, spacing, and radius.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--improved">Improved</span></span><span class="cl-item__text">Single-file app — no build step, no external dependencies beyond Google Fonts.</span></li>
-      </ul>
-    </div>
-  </article>
-
-  <!-- v1.0 -->
-  <article class="cl-entry">
-    <div class="cl-entry__aside">
-      <p class="cl-entry__version">v1.0</p>
-      <p class="cl-entry__date">25 March 2026</p>
-    </div>
-    <div class="cl-entry__content">
-      <p class="cl-entry__title">Initial release — static style guide</p>
-      <ul class="cl-list">
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Static HTML/CSS style guide — colour swatches, type scale, spacing scale, and basic component examples.</span></li>
-        <li class="cl-item"><span class="cl-item__tag"><span class="cl-tag cl-tag--new">New</span></span><span class="cl-item__text">Dark / light mode via data-theme attribute. Single file, no dependencies, instant load.</span></li>
-      </ul>
-    </div>
-  </article>
-
-</div>
-
-<footer class="cl-footer">
-  <a href="https://farhan.app" target="_blank" rel="noopener noreferrer">farhan.app</a>
-  <div class="cl-footer__links">
-    <a href="/">Builder</a>
-    <span class="cl-footer__dot" aria-hidden="true"></span>
-    <a href="changelog.html">Changelog</a>
-  </div>
+<footer class="app-footer">
+  <a href="/">Builder</a>
+  <span class="app-footer__sep" aria-hidden="true"></span>
+  <a href="changelog.html" aria-current="page" style="color: var(--app-text)">Changelog</a>
+  <span class="app-footer__sep" aria-hidden="true"></span>
+  <a href="https://github.com/farhanshares/design-system" target="_blank" rel="noopener noreferrer">GitHub<span class="sr-only"> (opens in a new tab)</span></a>
+  <span class="app-footer__spacer"></span>
+  <span class="app-footer__credit">Built by <a href="https://farhan.app" target="_blank" rel="noopener noreferrer">Farhan<span class="sr-only"> (opens in a new tab)</span></a></span>
 </footer>
 
 <script>
   (function () {
-    try {
-      const saved = JSON.parse(localStorage.getItem('dsb-v4-state-v1'));
-      const theme = saved?.settings?.theme || 'dark';
+    var btn = document.getElementById('btn-theme');
+    function applyTheme(theme) {
       document.documentElement.setAttribute('data-theme', theme);
-    } catch (e) {}
+      btn.querySelector('.icon-moon').style.display = theme === 'dark' ? 'none' : '';
+      btn.querySelector('.icon-sun').style.display  = theme === 'dark' ? '' : 'none';
+      btn.setAttribute('aria-label', theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+      try {
+        var state = JSON.parse(localStorage.getItem('dsb-v4-state-v1')) || {};
+        state.settings = state.settings || {};
+        state.settings.appTheme = theme;
+        localStorage.setItem('dsb-v4-state-v1', JSON.stringify(state));
+      } catch (e) {}
+    }
+    applyTheme(document.documentElement.getAttribute('data-theme') || 'light');
+    btn.addEventListener('click', function () {
+      applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
   })();
-
-  const btn = document.getElementById('btn-theme');
-  function applyTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    btn.querySelector('.icon-moon').style.display = theme === 'dark' ? '' : 'none';
-    btn.querySelector('.icon-sun').style.display  = theme === 'light' ? '' : 'none';
-    try {
-      const state = JSON.parse(localStorage.getItem('dsb-v4-state-v1')) || {};
-      state.settings = state.settings || {};
-      state.settings.theme = theme;
-      localStorage.setItem('dsb-v4-state-v1', JSON.stringify(state));
-    } catch (e) {}
-  }
-  applyTheme(document.documentElement.getAttribute('data-theme') || 'dark');
-  btn.addEventListener('click', () => {
-    applyTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
-  });
 </script>
 </body>
 </html>
