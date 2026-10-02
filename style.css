@@ -1567,52 +1567,77 @@ a.version-pill:hover { background: var(--app-panel); border-color: var(--app-bor
 .settings__group {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: var(--app-sp-2);
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+/* Divider between groups, matching panel section rhythm */
+.settings__group + .settings__group {
+  padding-top: var(--app-sp-6);
+  border-top: 1px solid var(--app-border-subtle);
 }
 
 .settings__label {
-  font-size: 12px;
+  font-size: var(--app-fs-sm);
   font-weight: 500;
   color: var(--app-text);
+  padding: 0;
 }
 
 .settings__sublabel {
-  font-size: 11px;
+  font-size: var(--app-fs-xs);
   color: var(--app-text-muted);
   display: block;
-  margin-bottom: 3px;
+  margin-bottom: 4px;
 }
 
 .settings__hint {
-  font-size: 11px;
+  font-size: var(--app-fs-xs);
   color: var(--app-text-subtle);
   line-height: 1.5;
+  margin: 0;
 }
 
 .settings__input {
-  font-size: 12px;
+  height: var(--app-h-btn);
+  font-size: var(--app-fs-sm);
+  font-family: var(--app-font-sans);
   color: var(--app-text);
   background: var(--app-panel);
   border: 1px solid var(--app-border);
-  border-radius: var(--app-radius-sm);
-  padding: 6px 8px;
+  border-radius: var(--app-r-md);
+  padding: 0 var(--app-sp-4);
   width: 100%;
   outline: none;
-  transition: border-color var(--app-trans-fast);
+  -webkit-appearance: none;
+  appearance: none;
+  -moz-appearance: textfield;
+  font-variant-numeric: tabular-nums;
+  transition: border-color var(--app-trans-fast), box-shadow var(--app-trans-fast);
 }
 
+.settings__input:hover { border-color: var(--app-border-2); }
 .settings__input:focus { border-color: var(--app-ring); box-shadow: 0 0 0 3px hsl(var(--app-c-ring) / 0.15); }
 
+/* Replace the native number spinner with a clean field */
+.settings__input::-webkit-outer-spin-button,
+.settings__input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
 .settings__segmented {
+  position: relative;
   display: flex;
-  background: var(--app-panel);
+  background: var(--app-elevated);
   border: 1px solid var(--app-border);
-  border-radius: var(--app-radius-sm);
+  border-radius: var(--app-r-md);
   padding: 2px;
   gap: 2px;
 }
 
 .settings__seg-btn {
+  position: relative;
   flex: 1;
   text-align: center;
   cursor: pointer;
@@ -1621,19 +1646,24 @@ a.version-pill:hover { background: var(--app-panel); border-color: var(--app-bor
 .settings__seg-btn input { position: absolute; opacity: 0; pointer-events: none; }
 
 .settings__seg-btn span {
-  font-size: 12px;
+  font-size: var(--app-fs-sm);
+  line-height: 1;
   color: var(--app-text-muted);
   font-weight: 500;
-  border-radius: 3px;
-  padding: 4px 8px;
-  display: block;
-  transition: all var(--app-trans-fast);
+  border-radius: var(--app-r-sm);
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--app-trans-fast), color var(--app-trans-fast), box-shadow var(--app-trans-fast);
 }
 
+.settings__seg-btn:hover span { color: var(--app-text); }
+
 .settings__seg-btn:has(input:checked) span {
-  background: var(--app-elevated);
+  background: var(--app-panel);
   color: var(--app-text);
-  box-shadow: var(--app-shadow-sm);
+  box-shadow: var(--app-shadow-sm), 0 0 0 1px var(--app-border);
 }
 
 .settings__seg-btn:has(input:focus-visible) span {
@@ -1643,26 +1673,57 @@ a.version-pill:hover { background: var(--app-panel); border-color: var(--app-bor
 .settings__row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: var(--app-sp-3);
 }
 
-.settings__field { display: flex; flex-direction: column; }
+.settings__field { display: flex; flex-direction: column; min-width: 0; }
 
 .settings__checkbox {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--app-text-muted);
+  gap: var(--app-sp-4);
+  font-size: var(--app-fs-sm);
+  color: var(--app-text);
   cursor: pointer;
+  user-select: none;
 }
 
 .settings__checkbox input {
-  width: 14px;
-  height: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  display: grid;
+  place-content: center;
+  background: var(--app-panel);
+  border: 1px solid var(--app-border-2);
+  border-radius: var(--app-r-sm);
   cursor: pointer;
-  accent-color: var(--app-accent);
+  transition: background var(--app-trans-fast), border-color var(--app-trans-fast), box-shadow var(--app-trans-fast);
 }
+
+.settings__checkbox input::after {
+  content: '';
+  width: 8px;
+  height: 4px;
+  border-left: 1.5px solid var(--app-primary-fg);
+  border-bottom: 1.5px solid var(--app-primary-fg);
+  transform: translateY(-1px) rotate(-45deg) scale(0);
+  transition: transform var(--app-trans-fast);
+}
+
+.settings__checkbox:hover input { border-color: var(--app-ring); }
+
+.settings__checkbox input:checked {
+  background: var(--app-primary);
+  border-color: var(--app-primary);
+}
+
+.settings__checkbox input:checked::after { transform: translateY(-1px) rotate(-45deg) scale(1); }
+
+.settings__checkbox input:focus-visible { outline: none; box-shadow: var(--app-focus-ring); }
 
 /* ══════════════════════════════════════════════
    11. COMMAND PALETTE

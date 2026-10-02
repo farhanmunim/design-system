@@ -471,16 +471,16 @@
       <input type="number" class="settings__input" id="setting-base-font" min="10" max="24" step="1" value="16" aria-describedby="setting-base-font-hint" />
       <p class="settings__hint" id="setting-base-font-hint">Controls rem to px conversion across the system.</p>
     </div>
-    <fieldset class="settings__group">
-      <legend class="settings__label">Input unit</legend>
+    <div class="settings__group" role="group" aria-labelledby="setting-unit-label">
+      <span class="settings__label" id="setting-unit-label">Input unit</span>
       <div class="settings__segmented">
         <label class="settings__seg-btn"><input type="radio" name="input-unit" value="rem" checked /><span>rem</span></label>
         <label class="settings__seg-btn"><input type="radio" name="input-unit" value="px" /><span>px</span></label>
       </div>
       <p class="settings__hint">Token inputs will display in the selected unit.</p>
-    </fieldset>
-    <fieldset class="settings__group">
-      <legend class="settings__label">Fluid clamp viewport</legend>
+    </div>
+    <div class="settings__group" role="group" aria-labelledby="setting-vp-label">
+      <span class="settings__label" id="setting-vp-label">Fluid clamp viewport</span>
       <div class="settings__row">
         <div class="settings__field">
           <label class="settings__sublabel" for="setting-min-vp">Min (px)</label>
@@ -491,12 +491,12 @@
           <input type="number" class="settings__input" id="setting-max-vp" min="800" max="2560" step="10" value="1280" />
         </div>
       </div>
-    </fieldset>
-    <fieldset class="settings__group">
-      <legend class="settings__label">CSS output</legend>
+    </div>
+    <div class="settings__group" role="group" aria-labelledby="setting-css-label">
+      <span class="settings__label" id="setting-css-label">CSS output</span>
       <label class="settings__checkbox"><input type="checkbox" id="setting-hide-comments" /> Hide comments</label>
       <label class="settings__checkbox"><input type="checkbox" id="setting-hide-framework" /> Hide framework classes</label>
-    </fieldset>
+    </div>
   </div>
 </div>
 
